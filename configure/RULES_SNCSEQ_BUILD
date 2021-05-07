@@ -1,6 +1,8 @@
 #	State notation language (snc) rules
 # Each <name>.st (or <name>.stt) produces <name>.c
 
+ifeq (,$(_RULES_SNCSEQ_BUILD_INCLUDED))
+_RULES_SNCSEQ_BUILD_INCLUDED := YES
 
 #--------------------------------------------------
 # snc flags
@@ -83,3 +85,5 @@ clean::
 endif
 
 -include $(ST_DEPENDS_FILES)
+
+endif # _RULES_SNCSEQ_BUILD_INCLUDED
