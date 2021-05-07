@@ -1,0 +1,98 @@
+name: Sequencer
+
+on:
+  push:
+    paths-ignore:
+      - 'documentation/*'
+      - '**/*.html'
+      - '**/*.md'
+  pull_request:
+
+env:
+  SETUP_PATH: .ci-local
+  APT: re2c
+  CHOCO: re2c
+  BREW: re2c
+
+jobs:
+  build:
+    name:
+    runs-on: ${{ matrix.os }}
+    # Set environment variables from matrix parameters
+    env:
+      CMP: ${{ matrix.cmp }}
+      BCFG: ${{ matrix.configuration }}
+      BASE: ${{ matrix.base }}
+      WINE: ${{ matrix.wine }}
+      EXTRA: ${{ matrix.extra }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+            wine: "64"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: static
+            base: "7.0"
+            wine: "64"
+
+          - os: ubuntu-20.04
+            cmp: clang
+            configuration: default
+            base: "7.0"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            base: "3.15"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            base: "3.14"
+
+          - os: macos-latest
+            cmp: clang
+            configuration: default
+            base: "7.0"
+
+          - os: windows-2019
+            cmp: vs2019
+            configuration: default
+            base: "7.0"
+
+          - os: windows-2019
+            cmp: vs2019
+            configuration: static
+            base: "7.0"
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: "apt-get install"
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install g++-mingw-w64-x86-64 gdb
+      if: runner.os == 'Linux'
+    - name: Automatic core dumper analysis
+      uses: mdavidsaver/ci-core-dumper@master
+    - name: Prepare and compile dependencies
+      run: python .ci/cue.py prepare
+    - name: Build main module
+      run: python .ci/cue.py build
+    - name: Run main module tests
+      run: python -m ci_core_dumper exec python .ci/cue.py test
+    - name: Collect and show test results
+      run: python .ci/cue.py test-results
