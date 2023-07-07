@@ -1,0 +1,1065 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tutorial &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Compiling SNL Programs" href="Compiling.html" />
+    <link rel="prev" title="Download and Installation" href="Installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Compiling.html" title="Compiling SNL Programs"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Installation.html" title="Download and Installation"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This chapter gives a gentle introduction to State Notation Language
+(SNL).</p>
+<div class="section" id="a-first-example">
+<h2>A First Example<a class="headerlink" href="#a-first-example" title="Permalink to this headline">¶</a></h2>
+<p>We start with a simple state machine <code class="docutils literal notranslate"><span class="pre">volt_check</span></code> that controls a
+light switch depending on the value of a voltage measurement and
+the internal state of the program. The following code fragment
+defines the state machine:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ss volt_check {
+  state light_off {
+    when (voltage &gt; 5.0) {
+      light = TRUE;
+      pvPut(light);
+    } state light_on
+  }
+  state light_on {
+    when (voltage &lt; 3.0) {
+      light = FALSE;
+      pvPut(light);
+    } state light_off
+  }
+}
+</pre></div>
+</div>
+<p>At the top level we use the keyword <code class="docutils literal notranslate"><span class="pre">ss</span></code> to declare a <em>state set</em> (which
+is SNL speak for state machine) named <code class="docutils literal notranslate"><span class="pre">volt_check</span></code>. Inside the code
+block that follows, we define the <em>states</em> of this state set, using the
+<code class="docutils literal notranslate"><span class="pre">state</span></code> keyword. There are two states here: <code class="docutils literal notranslate"><span class="pre">light_off</span></code> and <code class="docutils literal notranslate"><span class="pre">light_on</span></code>.
+Inside each state, we define conditions under which the program will
+enter another state, indicated by the keyword <code class="docutils literal notranslate"><span class="pre">when</span></code>. The block
+following the condition contains <em>action statements</em> that are executed
+when the condition fires.</p>
+<p>In our example, in state <code class="docutils literal notranslate"><span class="pre">light_off</span></code>, whenever the voltage exceeds a
+value of 5.0, the light switch is turned on, and the internal state
+changes to <code class="docutils literal notranslate"><span class="pre">light_on</span></code>. In state <code class="docutils literal notranslate"><span class="pre">light_on</span></code>, whenever the voltage is
+or drops below 3.0, the light switch is turned off, and the internal
+state changes to <code class="docutils literal notranslate"><span class="pre">light_off</span></code>.</p>
+<p>The following is a graphical representation of the above state machine:</p>
+<div><svg height="640" viewBox="0 0 488 640" width="488" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc />
+  <polygon fill="rgb(0,0,0)" points="247,68 255,76 247,84 239,76 247,68" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <rect fill="rgb(0,0,0)" height="30" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="100" x="197" y="146" />
+  <polygon fill="rgb(0,0,0)" points="247,218 295,241 247,264 199,241 247,218" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <path d="M 203 306 L 291 306 A16,20.0 0 0 1 291 346 L 203 346 A16,20.0 0 0 1 203 306" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <rect fill="rgb(0,0,0)" height="30" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="100" x="197" y="396" />
+  <polygon fill="rgb(0,0,0)" points="247,468 295,491 247,514 199,491 247,468" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <path d="M 203 556 L 291 556 A16,20.0 0 0 1 291 596 L 203 596 A16,20.0 0 0 1 203 556" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <polygon fill="rgb(255,255,255)" points="244,62 252,70 244,78 236,70 244,62" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="30" x="267.0" y="66">start</text>
+  <rect fill="rgb(255,255,255)" height="30" stroke="rgb(0,0,0)" stroke-dasharray="4" width="100" x="194" y="140" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="96" x="244.0" y="161">state: light_off</text>
+  <polygon fill="rgb(255,255,255)" points="244,212 292,235 244,258 196,235 244,212" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="30" x="244.0" y="240">v &gt; 5</text>
+  <path d="M 200 300 L 288 300 A16,20.0 0 0 1 288 340 L 200 340 A16,20.0 0 0 1 200 300" fill="rgb(255,255,255)" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="78" x="244.0" y="319">light = TRUE;</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="78" x="244.0" y="332">pvPut(light);</text>
+  <rect fill="rgb(255,255,255)" height="30" stroke="rgb(0,0,0)" stroke-dasharray="4" width="100" x="194" y="390" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="90" x="244.0" y="411">state: light_on</text>
+  <polygon fill="rgb(255,255,255)" points="244,462 292,485 244,508 196,485 244,462" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="30" x="244.0" y="490">v &lt; 3</text>
+  <path d="M 200 550 L 288 550 A16,20.0 0 0 1 288 590 L 200 590 A16,20.0 0 0 1 200 550" fill="rgb(255,255,255)" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="84" x="244.0" y="569">light = FALSE;</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="78" x="244.0" y="582">pvPut(light);</text>
+  <path d="M 244 78 L 244 132" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="244,139 240,132 248,132 244,139" stroke="rgb(0,0,0)" />
+  <path d="M 244 170 L 244 204" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,211 240,204 248,204 244,211" stroke="rgb(0,0,0)" />
+  <path d="M 244 258 L 244 292" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,299 240,292 248,292 244,299" stroke="rgb(0,0,0)" />
+  <path d="M 244 340 L 244 382" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="244,389 240,382 248,382 244,389" stroke="rgb(0,0,0)" />
+  <path d="M 244 420 L 244 454" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,461 240,454 248,454 244,461" stroke="rgb(0,0,0)" />
+  <path d="M 244 508 L 244 542" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,549 240,542 248,542 244,549" stroke="rgb(0,0,0)" />
+  <path d="M 244 590 L 244 615" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 244 615 L 353 615" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 353 615 L 353 121" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 244 121 L 353 121" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 244 121 L 244 132" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="244,139 240,132 248,132 244,139" stroke="rgb(0,0,0)" />
+  <rect fill="none" height="224" stroke="rgb(107,168,30)" stroke-dasharray="12" stroke-width="3" width="172" x="158" y="128" />
+  <rect fill="none" height="224" stroke="rgb(107,168,30)" stroke-dasharray="12" stroke-width="3" width="172" x="158" y="378" />
+</svg>
+</div>
+<p>Note that the output or action depends not only on the input or
+condition, but also on the current state. For instance, an input
+<code class="docutils literal notranslate"><span class="pre">voltage</span></code> of 4.2 volts does not alone determine the output (<code class="docutils literal notranslate"><span class="pre">light</span></code>),
+the current state matters, too.</p>
+<p>As you can see, the SNL code is syntactically very similar to the C
+language. Particularly, the syntax for variable declarations,
+expressions, and statements are exactly as in C, albeit with a few
+restrictions.</p>
+<p>You might wonder about the function calls in the above code.  The
+<code class="docutils literal notranslate"><span class="pre">pvPut</span></code> function is a special built-in function that writes (or puts)
+the value in the variable <code class="docutils literal notranslate"><span class="pre">light</span></code> to the appropriate process variable.
+But before I can explain how this works, we must talk about how program
+variables are “connected” to process variables.</p>
+</div>
+<div class="section" id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<p>SNL programs interact with the outside world via variables that are bound
+to (or connected to) <a class="reference internal" href="Glossary.html#term-process-variable"><code class="xref any std std-term docutils literal notranslate"><span class="pre">process</span> <span class="pre">variable</span></code></a>s (PVs) in EPICS. In our example,
+there are two such variables:  <code class="docutils literal notranslate"><span class="pre">voltage</span></code>, which represents a measured
+voltage, and <code class="docutils literal notranslate"><span class="pre">light</span></code> which controls a light switch. In an actual SNL
+program, these variables must be declared before they can be used:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float voltage;
+int light;
+</pre></div>
+</div>
+<p>We also want to associated them with PVs i.e. EPICS record fields:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>assign voltage to &quot;Input_voltage&quot;;
+assign light to &quot;Indicator_light&quot;;
+</pre></div>
+</div>
+<p>The above <a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a> clauses associate the variables <code class="docutils literal notranslate"><span class="pre">voltage</span></code> and
+<code class="docutils literal notranslate"><span class="pre">light</span></code> with the process variables “Input_voltage” and
+“Indicator_light” respectively.</p>
+<p>We also want the value of <code class="docutils literal notranslate"><span class="pre">voltage</span></code> to be updated automatically whenever
+it changes. This is accomplished with the following code:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>monitor voltage;
+</pre></div>
+</div>
+<p>Whenever the value in the control system (the EPICS database) changes,
+the value of <code class="docutils literal notranslate"><span class="pre">voltage</span></code> will likewise change. Note however that this
+depends on the underlying system sending update messages for the value
+in question. When and how often such updates are communicated by the
+underlying system may depend on the configuration of the PV. For
+instance if the PV “Input_voltage” is the VAL field of an ai (analog
+input) record, then the value of the MDEL field of the same record
+specifies the amount of change that the designer considers a
+“relevant” change; smaller changes will not cause an event to be sent,
+and accordingly will not cause a state change in the above program.</p>
+</div>
+<div class="section" id="built-in-pv-functions">
+<h2>Built-in PV Functions<a class="headerlink" href="#built-in-pv-functions" title="Permalink to this headline">¶</a></h2>
+<p>I said above that the program interacts with the outside world via
+variables assigned to PVs. However, mutating such a variable e.g. via
+the C assignment operator (see <a class="reference internal" href="Reference.html#assignment-operators"><span class="std std-ref">Assignment Operators</span></a>), as in:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>light = TRUE;
+</pre></div>
+</div>
+<p>only changes the value of <code class="docutils literal notranslate"><span class="pre">light</span></code> as seen from inside the program.
+In order for the new value to take effect, it must be written to the
+PV connected with the variable. This is done by calling the special
+built-in function <a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a>, that gets the variable as argument.</p>
+<p>Note that calling such a special built-in function does <em>not</em> follow
+the standard C semantics for function calls! Particularly, what
+actually gets passed to the function is not the <em>value</em> of the variable
+<code class="docutils literal notranslate"><span class="pre">light</span></code> (as it would in C), instead an internal representation of the
+variable gets passed (by reference). You can think of what actually
+gets passed as an “object” (as in “object-oriented”) or a “handle”
+that contains all the necessary run-time information, one of which is
+the name of PV the variable is connected with.</p>
+<p>There are many more of these built-in functions, the <a class="reference internal" href="Reference.html"><span class="doc">SNL Reference for Version 2.2</span></a>
+contains detailed description of each one. For now, let’s keep to the
+basics; I’ll mention just one more built-in function: With
+<a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a>, you can poll PVs explicitly, instead of using
+<a class="reference internal" href="Reference.html#grammar-token-monitor"><code class="xref any std std-token docutils literal notranslate"><span class="pre">monitor</span></code></a>. That is, a statement such as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvGet(voltage);
+</pre></div>
+</div>
+<p>has the effect of sending a get request to the PV “Input_voltage”,
+waiting for the response, and then updating the variable with the
+new value.</p>
+</div>
+<div class="section" id="a-complete-program">
+<span id="id1"></span><h2>A Complete Program<a class="headerlink" href="#a-complete-program" title="Permalink to this headline">¶</a></h2>
+<p>Here is what the complete program for our example looks like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program level_check
+
+float voltage;
+assign voltage to &quot;Input_voltage&quot;;
+monitor voltage;
+
+short light;
+assign light to &quot;Indicator_light&quot;;
+
+ss volt_check {
+  state light_off {
+    when (voltage &gt; 5.0) {
+      /* turn light on */
+      light = TRUE;
+      pvPut(light);
+    } state light_on
+  }
+
+  state light_on {
+    when (voltage &lt; 5.0) {
+      /* turn light off */
+      light = FALSE;
+      pvPut(light);
+    } state light_off
+  }
+}
+</pre></div>
+</div>
+<p>Each program must start with the word <a class="reference internal" href="Reference.html#grammar-token-program"><code class="xref any std std-token docutils literal notranslate"><span class="pre">program</span></code></a>, followed by the name
+of the program (an identifier):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program level_check
+</pre></div>
+</div>
+<p>After that come global declarations and then one or more state sets.</p>
+</div>
+<div class="section" id="adding-a-second-state-set">
+<h2>Adding a Second State Set<a class="headerlink" href="#adding-a-second-state-set" title="Permalink to this headline">¶</a></h2>
+<p>We will now add a second state set to the previous example. This
+new state set generates a changing value as its output (a triangle
+function with amplitude 11).</p>
+<p>First, we add the following lines to the declaration:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float vout;
+float delta;
+assign vout to &quot;Output_voltage&quot;;
+</pre></div>
+</div>
+<p>Next we add the following lines after the first state set:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ss generate_voltage {
+  state init {
+    when () {
+      vout = 0.0;
+      pvPut(vout);
+      delta = 0.2;
+    } state ramp
+  }
+  state ramp {
+    when (delay(0.1)) {
+      if ((delta &gt; 0.0 &amp;&amp; vout &gt;= 11.0) ||
+          (delta &lt; 0.0 &amp;&amp; vout &lt;= -11.0)) {
+        delta = -delta; /* change direction */
+      }
+      vout += delta;
+    } state ramp
+  }
+}
+</pre></div>
+</div>
+<p>The above example exhibits several concepts. First, note that the
+<a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause in state <code class="docutils literal notranslate"><span class="pre">init</span></code> contains an empty event
+expression. This means unconditional execution of the transition. The
+first state in each state set is always the initial state, so we give
+it the name <code class="docutils literal notranslate"><span class="pre">init</span></code>. From this first state there is an immediate
+unconditional transition to the state <code class="docutils literal notranslate"><span class="pre">ramp</span></code>, initializing some
+variables during the transition. Note that the <code class="docutils literal notranslate"><span class="pre">ramp</span></code> state always
+returns to itself. The structure of this state set is shown in the
+following STD:</p>
+<div><svg height="655" viewBox="0 0 488 655" width="488" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc />
+  <polygon fill="rgb(0,0,0)" points="247,68 255,76 247,84 239,76 247,68" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <rect fill="rgb(0,0,0)" height="30" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="100" x="197" y="146" />
+  <polygon fill="rgb(0,0,0)" points="247,218 295,241 247,264 199,241 247,218" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <path d="M 203 306 L 291 306 A16,20.0 0 0 1 291 361 L 203 361 A16,20.0 0 0 1 203 306" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <rect fill="rgb(0,0,0)" height="30" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="100" x="197" y="411" />
+  <polygon fill="rgb(0,0,0)" points="247,483 305,506 247,529 189,506 247,483" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <path d="M 203 571 L 291 571 A16,20.0 0 0 1 291 611 L 203 611 A16,20.0 0 0 1 203 571" fill="rgb(0,0,0)" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" />
+  <polygon fill="rgb(255,255,255)" points="244,62 252,70 244,78 236,70 244,62" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="30" x="267.0" y="66">start</text>
+  <rect fill="rgb(255,255,255)" height="30" stroke="rgb(0,0,0)" stroke-dasharray="4" width="100" x="194" y="140" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="244.0" y="161">state: init</text>
+  <polygon fill="rgb(255,255,255)" points="244,212 292,235 244,258 196,235 244,212" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="24" x="244.0" y="240">TRUE</text>
+  <path d="M 200 300 L 288 300 A16,20.0 0 0 1 288 355 L 200 355 A16,20.0 0 0 1 200 300" fill="rgb(255,255,255)" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="244.0" y="320">vout = 0.0;</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="72" x="244.0" y="333">pvPut(vout);</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="72" x="244.0" y="346">delta = 0.2;</text>
+  <rect fill="rgb(255,255,255)" height="30" stroke="rgb(0,0,0)" stroke-dasharray="4" width="100" x="194" y="405" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="244.0" y="426">state: ramp</text>
+  <polygon fill="rgb(255,255,255)" points="244,477 302,500 244,523 186,500 244,477" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="54" x="244.0" y="505">delay ...</text>
+  <path d="M 200 565 L 288 565 A16,20.0 0 0 1 288 605 L 200 605 A16,20.0 0 0 1 200 565" fill="rgb(255,255,255)" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="18" x="244.0" y="584">...</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="84" x="244.0" y="597">vout += delta;</text>
+  <path d="M 244 78 L 244 132" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="244,139 240,132 248,132 244,139" stroke="rgb(0,0,0)" />
+  <path d="M 244 170 L 244 204" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,211 240,204 248,204 244,211" stroke="rgb(0,0,0)" />
+  <path d="M 244 258 L 244 292" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,299 240,292 248,292 244,299" stroke="rgb(0,0,0)" />
+  <path d="M 244 355 L 244 397" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="244,404 240,397 248,397 244,404" stroke="rgb(0,0,0)" />
+  <path d="M 244 435 L 244 469" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,476 240,469 248,469 244,476" stroke="rgb(0,0,0)" />
+  <path d="M 244 523 L 244 557" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="1 2" />
+  <polygon fill="rgb(0,0,0)" points="244,564 240,557 248,557 244,564" stroke="rgb(0,0,0)" />
+  <path d="M 244 605 L 244 630" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 244 630 L 353 630" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 353 630 L 353 386" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 244 386 L 353 386" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 244 386 L 244 397" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="244,404 240,397 248,397 244,404" stroke="rgb(0,0,0)" />
+  <rect fill="none" height="239" stroke="rgb(107,168,30)" stroke-dasharray="12" stroke-width="3" width="172" x="158" y="128" />
+  <rect fill="none" height="224" stroke="rgb(107,168,30)" stroke-dasharray="12" stroke-width="3" width="172" x="158" y="393" />
+</svg>
+</div>
+<p>The final concept introduced in the last example is the <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a> function.
+This function returns a boolean that tells us whether the given time
+interval has elapsed. The interval is given in seconds (as a floating point
+value) and counts from the time the state was entered.</p>
+<p>At this point, you may wish to try an example with the two state sets.
+You can jump ahead and read parts of the Chapters <a class="reference internal" href="Compiling.html"><span class="doc">Compiling SNL Programs</span></a> and
+<a class="reference internal" href="Using.html"><span class="doc">Running SNL Programs</span></a> to find out how. You probably want to pick unique names
+for your process variables, rather than the ones used above.</p>
+</div>
+<div class="section" id="variable-initialization-and-entry-blocks">
+<h2>Variable Initialization and Entry Blocks<a class="headerlink" href="#variable-initialization-and-entry-blocks" title="Permalink to this headline">¶</a></h2>
+<p>Since version 2.1 it has become simpler to initialize variables: you
+can use the same syntax as in C, i.e. initialize together with the
+declaration:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float vout = 0.0;
+float delta = 0.2;
+</pre></div>
+</div>
+<p>which, by the way, can also be written as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float vout = 0.0, delta = 0.2;
+</pre></div>
+</div>
+<p>More complicated initialization (e.g. involving non-constant expressions or
+side-effects) can be done using an <a class="reference internal" href="Reference.html#grammar-token--16"><code class="xref any std std-token docutils literal notranslate"><span class="pre">entry</span></code></a> block instead of using a separate
+state:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ss generate_voltage {
+  state ramp {
+    entry {
+      pvPut(vout);
+    }
+    when (delay(0.1)) {
+      ...
+    } state ramp
+  }
+}
+</pre></div>
+</div>
+<p>The actions in an entry block in a state declaration are executed whenever
+the state is entered from a different state. In this case this means the</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvPut(vout);
+</pre></div>
+</div>
+<p>that appears inside the entry block will be executed only once when the
+state is entered for the first time.</p>
+</div>
+<div class="section" id="pv-names-using-program-parameters">
+<h2>PV Names Using Program Parameters<a class="headerlink" href="#pv-names-using-program-parameters" title="Permalink to this headline">¶</a></h2>
+<p>You can use program parameter substitution to parameterize the PV names
+in your program. In our example we could replace the <a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a>
+statements with the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>assign voltage to &quot;{unit}:ai1&quot;;
+assign vout to &quot;{unit}:ao1&quot;;
+</pre></div>
+</div>
+<p>The string within the curly braces is the name of a program parameter
+and the whole thing (the name and the braces) are replaced with the
+value of the parameter. For example, if the parameter “unit” has value
+“DTL_6:CM_2”, then the expanded PV name is “DTL_6:CM_2:ai1”. See
+<a class="reference internal" href="Using.html#run-time-parameters"><span class="std std-ref">Program Parameters</span></a> for more on program parameters (and
+particularly how to give them values).</p>
+</div>
+<div class="section" id="data-types">
+<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<p>In earlier versions, variables were restricted to a hand full of
+predefined types, plus one or two-dimensional arrays of these.</p>
+<p>This is no longer true: you can declare variables of any type you like.
+The only restrictions are:</p>
+<ol class="arabic simple">
+<li><p>you cannot <em>define</em> new types, only use them in declarations</p></li>
+<li><p>when using type aliases (“typedef”) you must prefix them with
+the keyword “typename”</p></li>
+<li><p>only variables of the above mentioned restricted list can be
+<a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a>'ed to PVs.</p></li>
+</ol>
+<p>The built-in types are: <code class="docutils literal notranslate"><span class="pre">char</span></code>, <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code>, <code class="docutils literal notranslate"><span class="pre">short</span></code>,
+<code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">long</span></code>,  <code class="docutils literal notranslate"><span class="pre">unsigned</span>
+<span class="pre">long</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> , and <code class="docutils literal notranslate"><span class="pre">double</span></code>. These correspond exactly to their C
+equivalents. In addition there is the type <code class="docutils literal notranslate"><span class="pre">string</span></code>, which is an array
+of 40 <code class="docutils literal notranslate"><span class="pre">char</span></code>.</p>
+<p>Sequencer variables having any of these types may be
+assigned to a process variable. The type declared does not have to be
+the same as the native control system value type. The conversion
+between types is performed at run-time. For more details see the
+<a class="reference internal" href="Reference.html#types"><span class="std std-ref">corresponding section in the reference</span></a>.</p>
+<p>You may specify array variables as follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>long arc_wf[1000];
+</pre></div>
+</div>
+<p>When assigned to a process variable, operations such as
+<a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a> are performed for the entire array.</p>
+</div>
+<div class="section" id="arrays-of-variables">
+<h2>Arrays of Variables<a class="headerlink" href="#arrays-of-variables" title="Permalink to this headline">¶</a></h2>
+<p>Often it is necessary to have several associated process
+variables. The ability to assign each element of an SNL array to a
+separate process variable can significantly reduce the code
+complexity. The following illustrates this point:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float Vin[4];
+assign Vin[0] to &quot;{unit}1&quot;;
+assign Vin[1] to &quot;{unit}2&quot;;
+assign Vin[2] to &quot;{unit}3&quot;;
+assign Vin[3] to &quot;{unit}4&quot;;
+</pre></div>
+</div>
+<p>We can then take advantage of the <code class="docutils literal notranslate"><span class="pre">Vin</span></code> array to reduce code size
+as in the following example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for (i = 0; i &lt; 4; i++) {
+  Vin[i] = 0.0;
+  pvPut (Vin[i]);
+}
+</pre></div>
+</div>
+<p>We also have a shorthand method for assigning channels to array
+elements:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>assign Vin to { &quot;{unit}1&quot;, &quot;{unit}2&quot;, &quot;{unit}3&quot;, &quot;{unit}4&quot; };
+</pre></div>
+</div>
+<p>Similarly, the monitor declaration may be either by individual
+element:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>monitor Vin[0];
+monitor Vin[1];
+monitor Vin[2];
+monitor Vin[3];
+</pre></div>
+</div>
+<p>Alternatively, we can do this for the entire array:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>monitor Vin;
+</pre></div>
+</div>
+<p>And the same goes when <a class="reference internal" href="#synchronizing-state-sets-with-event-flags">Synchronizing State Sets with Event Flags</a>
+and <a class="reference internal" href="#queuingmonitors"><span class="std std-ref">Queuing Monitors</span></a>.</p>
+<p>Double subscripts offer additional options:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>double X[2][100];
+assign X to {&quot;apple&quot;, &quot;orange&quot;};
+</pre></div>
+</div>
+<p>The declaration creates an array with 200 elements. The first 100
+elements of <code class="docutils literal notranslate"><span class="pre">X</span></code> are assigned to (array) “apple”, and the second
+100 elements are assigned to (array) “orange” .</p>
+<p>It is important to understand the distinction between the first and
+second array indices here. The first index defines a 2-element array
+of which each element is associated with a process variable. The
+second index defines a 100-element double array to hold the value of
+each of the two process variables. When used in a context where a
+number is expected, both indices must be specified, e.g. <code class="docutils literal notranslate"><span class="pre">X[1][49]</span></code>
+is the 50th element of the value of “orange” . When used in a context
+where a process variable is expected, e.g. with <a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a>, then
+only the first index should be specified, e.g. <code class="docutils literal notranslate"><span class="pre">X[1]</span></code> for “orange” .</p>
+</div>
+<div class="section" id="dynamic-assignment">
+<h2>Dynamic Assignment<a class="headerlink" href="#dynamic-assignment" title="Permalink to this headline">¶</a></h2>
+<p>You may dynamically assign or re-assign variable to process
+variables during the program execution as follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float Xmotor;
+assign Xmotor to &quot;Motor_A_2&quot;;
+...
+sprintf (pvName, &quot;Motor_%s_%d&quot;, snum, mnum)
+pvAssign (Xmotor[i], pvName);
+</pre></div>
+</div>
+<p>Note that dynamic (re-)assignment fails (with a compiler error)
+if the variable has not been assigned statically.</p>
+<p>An empty string in the assign declaration implies no initial
+assignment and can be used to mark variables or array elements
+for later dynamic assignment:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>assign Xmotor to &quot;&quot;;
+</pre></div>
+</div>
+<p>Likewise, an empty string can de-assign a variable:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvAssign(Xmotor, &quot;&quot;);
+</pre></div>
+</div>
+<p>The current assignment status of a variable is returned by the
+<a class="reference internal" href="Reference.html#c.pvAssigned" title="pvAssigned"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvAssigned</span></code></a> function as follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>isAssigned = pvAssigned(Xmotor);
+</pre></div>
+</div>
+<p>The number of assigned variables is returned by the
+<a class="reference internal" href="Reference.html#c.pvAssignCount" title="pvAssignCount"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvAssignCount</span></code></a> function as follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>numAssigned = pvAssignCount();
+</pre></div>
+</div>
+<p>The following inequality will always hold:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvConnectCount() &lt;= pvAssignCount() &lt;= pvChannelCount()
+</pre></div>
+</div>
+<p>Having assigned a variable, you should wait for it to connect
+before using it (although it is OK to monitor it). See
+<a class="reference internal" href="#connection-management">Connection Management</a>.</p>
+</div>
+<div class="section" id="status-of-process-variables">
+<h2>Status of Process Variables<a class="headerlink" href="#status-of-process-variables" title="Permalink to this headline">¶</a></h2>
+<p>Process variables have an associated status, severity and time stamp.
+You can obtain these with the <a class="reference internal" href="Reference.html#c.pvStatus" title="pvStatus"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvStatus</span></code></a>, <a class="reference internal" href="Reference.html#c.pvSeverity" title="pvSeverity"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvSeverity</span></code></a>
+and <a class="reference internal" href="Reference.html#c.pvTimeStamp" title="pvTimeStamp"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvTimeStamp</span></code></a> functions. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>when (pvStatus(x_motor) != pvStatOK) {
+printf(&quot;X motor status=%d, severity=%d, timestamp=%d\\n&quot;,
+pvStatus(x_motor), pvSeverity(x_motor),
+pvTimeStamp(x_motor).secPastEpoch);
+...
+</pre></div>
+</div>
+<p>These routines are described in <a class="reference internal" href="Reference.html#builtinfunctions"><span class="std std-ref">Built-in Functions</span></a>. The values
+for status and severity are defined in the include file <em>pvAlarm.h</em>,
+and the time stamp is returned as a standard EPICS <code class="docutils literal notranslate"><span class="pre">TS_STAMP</span></code>
+structure, which is defined in <em>tsStamp.h</em> . Both these files are
+automatically included when compiling sequences (but the SNL compiler
+doesn’t know about them, so you will get warnings when using constants
+like <code class="docutils literal notranslate"><span class="pre">pvStatOK</span></code> or tags like <code class="docutils literal notranslate"><span class="pre">secPastEpoch</span></code> ).</p>
+</div>
+<div class="section" id="synchronizing-state-sets-with-event-flags">
+<span id="eventflags"></span><h2>Synchronizing State Sets with Event Flags<a class="headerlink" href="#synchronizing-state-sets-with-event-flags" title="Permalink to this headline">¶</a></h2>
+<p>State sets within a program may be synchronized through the use
+of event flags. Typically, one state set will set an event flag, and
+another state set will test that event flag within a <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a>
+clause. The <a class="reference internal" href="Reference.html#grammar-token-sync"><code class="xref any std std-token docutils literal notranslate"><span class="pre">sync</span></code></a> statement may also be used to associate an
+event flag with a process variable that is being monitored. In that
+case, whenever a monitor is delivered, the corresponding event flag is
+set. Note that this provides an alternative to testing the value of
+the monitored channel and is particularly valuable when the channel
+being tested is an array or when it can have multiple values and an
+action must occur for any change.</p>
+<p>This example shows a state set that forces a low limit always to be
+less than or equal to a high limit. The first <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause
+fires when the low limit changes and someone has attempted to set it
+above the high limit. The second <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause fires when the
+opposite situation occurs.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>double loLimit;
+assign loLimit to &quot;demo:loLimit&quot;;
+monitor loLimit;
+evflag loFlag;
+sync loLimit loFlag;
+
+double hiLimit;
+assign hiLimit to &quot;demo:hiLimit&quot;;
+monitor hiLimit;
+evflag hiFlag;
+sync hiLimit hiFlag;
+
+ss limit {
+  state START {
+    when ( efTestAndClear( loFlag ) &amp;&amp; loLimit &gt; hiLimit ) {
+      hiLimit = loLimit;
+      pvPut( hiLimit );
+    } state START
+
+    when ( efTestAndClear( hiFlag ) &amp;&amp; hiLimit &lt; loLimit ) {
+      loLimit = hiLimit;
+      pvPut( loLimit );
+    } state START
+  }
+}
+</pre></div>
+</div>
+<p>The event flag is actually associated with the SNL variable, not
+the underlying process variable. If the SNL variable is an
+array then the event flag is set whenever a monitor is posted on
+any of the process variables that are associated with an
+element of that array.</p>
+</div>
+<div class="section" id="queuing-monitors">
+<span id="queuingmonitors"></span><h2>Queuing Monitors<a class="headerlink" href="#queuing-monitors" title="Permalink to this headline">¶</a></h2>
+<p>Neither testing the value of a monitored channel in a <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a>
+clause nor associating the channel with an event flag and then testing
+the event flag can guarantee that the sequence is aware of all
+monitors posted on the channel. Often this doesn’t matter, but
+sometimes it does. For example, a variable may transition to 1 and
+then back to 0 to indicate that a command is active and has completed.
+These transitions may occur in rapid succession. This problem can be
+avoided by using the <a class="reference internal" href="Reference.html#grammar-token--74"><code class="xref any std std-token docutils literal notranslate"><span class="pre">syncq</span></code></a> statement to associate a variable
+with a queue. The <a class="reference internal" href="Reference.html#c.pvGetQ" title="pvGetQ"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetQ</span></code></a> function retrieves and removes the
+head of queue.</p>
+<p>This example illustrates a typical use of <a class="reference internal" href="Reference.html#c.pvGetQ" title="pvGetQ"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetQ</span></code></a> : setting a
+command variable to 1 and then changing state as an active flag
+transitions to 1 and then back to 0. Note the use of <a class="reference internal" href="Reference.html#c.pvFlushQ" title="pvFlushQ"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvFlushQ</span></code></a>
+to clear the queue before sending the command. Note also that, if
+<a class="reference internal" href="Reference.html#c.pvGetQ" title="pvGetQ"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetQ</span></code></a> hadn’t been used then the active flag’s transitions
+from 0 to 1 and back to 0 might both have occurred before the
+<a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause in the <code class="docutils literal notranslate"><span class="pre">sent</span></code> state fired:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>long command; assign command to &quot;commandVar&quot;;
+
+long active; assign active to &quot;activeVar&quot;; monitor active;
+syncq active 2;
+
+ss queue {
+  state start {
+    entry {
+      pvFlushQ( active );
+      command = 1;
+      pvPut( command );
+    }
+    when ( pvGetQ( active ) &amp;&amp; active ) {
+    } state high
+  }
+  state high {
+    when ( pvGetQ( active ) &amp;&amp; !active ) {
+    } state done
+  }
+  state done {
+    /* ... */
+  }
+}
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">active</span></code> SNL variable could have been an array in the above
+example. It could therefore have been associated with a set of
+related control system <code class="docutils literal notranslate"><span class="pre">active</span></code> flags. In this case, the queue
+would have had an entry added to it whenever a monitor was posted
+on any of the underlying control system <code class="docutils literal notranslate"><span class="pre">active</span></code> flags.</p>
+</div>
+<div class="section" id="asynchronous-use-of-pvget">
+<h2>Asynchronous Use of pvGet<a class="headerlink" href="#asynchronous-use-of-pvget" title="Permalink to this headline">¶</a></h2>
+<p>Normally the <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> operation completes before the function
+returns, thus ensuring data integrity. However, it is possible to use
+these functions asynchronously by specifying the <a class="reference internal" href="Compiling.html#cmdoption-arg-a"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+a</span></code></a> compiler
+flag (see <a class="reference internal" href="Compiling.html#compileroptions"><span class="std std-ref">Compiler Options</span></a>). The operation might not be
+initiated until the action statements in the current transition have
+been completed and it could complete at any later time. To test for
+completion use the function <a class="reference internal" href="Reference.html#c.pvGetComplete" title="pvGetComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetComplete</span></code></a>, which is
+described in <a class="reference internal" href="Reference.html#builtinfunctions"><span class="std std-ref">Built-in Functions</span></a>.</p>
+<p><a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> also accepts an optional <code class="docutils literal notranslate"><span class="pre">SYNC</span></code> or <code class="docutils literal notranslate"><span class="pre">ASYNC</span></code>
+argument, which overrides the <a class="reference internal" href="Compiling.html#cmdoption-arg-a"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+a</span></code></a> compiler flag. For
+example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvGet( initActive[i], ASYNC );
+</pre></div>
+</div>
+</div>
+<div class="section" id="asynchronous-use-of-pvput">
+<span id="asynchronoususeofpvput"></span><h2>Asynchronous Use of pvPut<a class="headerlink" href="#asynchronous-use-of-pvput" title="Permalink to this headline">¶</a></h2>
+<p>Normally <a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a> is a “fire and forget” operation without any provisions for
+testing if and when it completed successfully. However, this
+behaviour can be modified by passing an optional <code class="docutils literal notranslate"><span class="pre">SYNC</span></code> or <code class="docutils literal notranslate"><span class="pre">ASYNC</span></code>
+argument. With <code class="docutils literal notranslate"><span class="pre">SYNC</span></code>, the call blocks until the operation is complete,
+while with <code class="docutils literal notranslate"><span class="pre">ASYNC</span></code> the call returns immediately. In the latter case,
+<a class="reference internal" href="Reference.html#c.pvPutComplete" title="pvPutComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPutComplete</span></code></a> tells you whether the operation completed.</p>
+<p>For example,</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvPut(init[i], SYNC);
+</pre></div>
+</div>
+<p>will block until the put operation to the PV behind <code class="docutils literal notranslate"><span class="pre">init[i]</span></code> (and all the
+processing resulting from it) is complete, while</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvPut(init[i], ASYNC);
+</pre></div>
+</div>
+<p>does not block and instead lets you test completion explicitly, e.g.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>when(pvPutComplete(init[i])) {
+  ...
+}
+</pre></div>
+</div>
+<p>Note that <a class="reference internal" href="Reference.html#c.pvPutComplete" title="pvPutComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPutComplete</span></code></a> can only be used with single PVs. Testing
+completion for multiple PVs in a multi-PV array can be done with
+<a class="reference internal" href="Reference.html#c.pvArrayPutComplete" title="pvArrayPutComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayPutComplete</span></code></a> as in the following example</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#define N 3
+long init[N];
+seqBool done[N]; /* used in the modified example below */
+assign init to {&quot;ss1:init&quot;, &quot;ss2:init&quot;, &quot;ss3:init&quot;};
+
+state inactive {
+  when () {
+    for ( i = 0; i &lt; N; i++ ) {
+      init[i] = 1;
+      pvPut( init[i], ASYNC );
+    }
+  } state active
+}
+
+state active {
+  when ( pvArrayPutComplete( init ) ) {
+  } state done
+
+  when ( delay( 10.0 ) ) {
+  } state timeout
+}
+</pre></div>
+</div>
+<p><a class="reference internal" href="Reference.html#c.pvArrayPutComplete" title="pvArrayPutComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayPutComplete</span></code></a> accepts optional arguments to tweak its behaviour.
+For instance, the following could be inserted
+before the first <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause in the <code class="docutils literal notranslate"><span class="pre">active</span></code> state above.
+The <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> argument causes <a class="reference internal" href="Reference.html#c.pvPutComplete" title="pvPutComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPutComplete</span></code></a> to return
+<code class="docutils literal notranslate"><span class="pre">TRUE</span></code> when any command completed (rather than only when all
+commands complete). The <code class="docutils literal notranslate"><span class="pre">done</span></code> argument is the address of a <code class="docutils literal notranslate"><span class="pre">seqBool</span></code>
+array of the same size as <code class="docutils literal notranslate"><span class="pre">init</span></code> ; its elements are set to <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> for
+puts that are not yet complete and to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> for puts that are complete.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>when ( pvPutComplete( init, TRUE, done ) ) {
+  for ( i = 0; i &lt; N; i++ )
+    printf( &quot; %ld&quot;, done[i] );
+  printf( &quot;\n&quot; );
+} state active
+</pre></div>
+</div>
+</div>
+<div class="section" id="connection-management">
+<h2>Connection Management<a class="headerlink" href="#connection-management" title="Permalink to this headline">¶</a></h2>
+<p>All process variable connections are handled by the sequencer via the
+PV API. Normally the programs are not run until all process
+variables are connected. However, with the <a class="reference internal" href="Compiling.html#cmdoption-c"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-c</span></code></a> compiler flag,
+execution begins while the connections are being established. The
+program can test for each variable’s connection status with the
+<a class="reference internal" href="Reference.html#c.pvConnected" title="pvConnected"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvConnected</span></code></a> routine, or it can test for all variables
+connected with the following comparison (if not using dynamic
+assignment, see <a class="reference internal" href="#dynamic-assignment">Dynamic Assignment</a>, <a class="reference internal" href="Reference.html#c.pvAssignCount" title="pvAssignCount"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvAssignCount</span></code></a> will be
+the same as <a class="reference internal" href="Reference.html#c.pvChannelCount" title="pvChannelCount"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvChannelCount</span></code></a>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvConnectCount() == pvAssignCount()
+</pre></div>
+</div>
+<p>These routines are described in <a class="reference internal" href="Reference.html#builtinfunctions"><span class="std std-ref">Built-in Functions</span></a>. If a variable
+disconnects or re-connects during execution of a program, the
+sequencer updates the connection status appropriately; this can be
+tested in a <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause, as in:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>when (pvConnectCount() &lt; pvAssignCount()) {
+} state disconnected
+</pre></div>
+</div>
+<p>When using dynamic assignment, you should wait for the newly
+assigned variables to connect, as in:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>when (pvConnectCount() == pvAssignCount()) {
+} state connected
+
+when (delay(10)) {
+} state connect_timeout
+</pre></div>
+</div>
+<p>Note that the connection callback may be delivered before or after
+the initial monitor callback (the PV API does not specify the
+behavior, although the underlying message system may do so). If
+this matters to you, you should synchronize the value with an event
+flag and wait for the event flag to be set before proceeding. See
+<a class="reference internal" href="#synchronizing-state-sets-with-event-flags">Synchronizing State Sets with Event Flags</a> for an example.</p>
+</div>
+<div class="section" id="multiple-instances-and-reentrant-object-code">
+<h2>Multiple Instances and Reentrant Object Code<a class="headerlink" href="#multiple-instances-and-reentrant-object-code" title="Permalink to this headline">¶</a></h2>
+<p>Occasionally you will create a program that can be used in
+multiple instances. If these instances run in separate address spaces,
+there is no problem. However, if more than one instance must be
+executed simultaneously in a single address space, then the objects
+must be made reentrant using the <a class="reference internal" href="Compiling.html#cmdoption-arg-r"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+r</span></code></a> compiler flag. With this
+flag all variables are allocated dynamically at run time; otherwise
+they are declared static. With the <a class="reference internal" href="Compiling.html#cmdoption-arg-r"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+r</span></code></a> flag all variables
+become elements of a common data structure, and therefore access to
+variables is slightly less efficient.</p>
+</div>
+<div class="section" id="process-variable-element-count">
+<h2>Process Variable Element Count<a class="headerlink" href="#process-variable-element-count" title="Permalink to this headline">¶</a></h2>
+<p>All requests for process variables that are arrays assume the array
+size for the element count. However, if the process variable has a
+smaller count than the array size, the smaller number is used for all
+requests. This count is available with the <a class="reference internal" href="Reference.html#c.pvCount" title="pvCount"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvCount</span></code></a> function.
+The following example illustrates this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>float wf[2000];
+assign wf to &quot;{unit}:CavField.FVAL&quot;;
+int LthWF;
+...
+LthWF = pvCount(wf);
+for (i = 0; i &lt; LthWF; i++) {
+  ...
+}
+pvPut(wf);
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="what-s-happening-at-run-time">
+<h2>What’s Happening at Run Time<a class="headerlink" href="#what-s-happening-at-run-time" title="Permalink to this headline">¶</a></h2>
+<p>At run time the sequencer blocks until something “interesting” occurs, where
+“interesting” means things like receiving a monitor from a PV used in a
+<a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause, an event flag changing state, or a delay timer
+expiring. See section <a class="reference internal" href="Reference.html#grammar-token--90"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transitions</span></code></a> in the <a class="reference internal" href="Reference.html"><span class="doc">SNL Reference for Version 2.2</span></a> for a
+detailed list.</p>
+<p>The sequencer then scans the list of <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> statements for the
+current state and evaluates each expression in turn. If a <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a>
+expression evaluates to non-zero the actions within that <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> block
+are executed and the sequencer enters the state specified by that
+<a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> statement. The sequencer then blocks again waiting for
+something “interesting” to happen.</p>
+<p>Note, however, that whenever a new state is entered, the corresponding
+<a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> conditions for that state are evaluated once without first
+waiting for events.</p>
+</div>
+<div class="section" id="safe-mode">
+<span id="safe-mode-tutorial"></span><h2>Safe Mode<a class="headerlink" href="#safe-mode" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.1.</span></p>
+</div>
+<p>SNL code can be interpreted in <em>safe mode</em>. This must be enabled with the
+<a class="reference internal" href="Compiling.html#cmdoption-arg-s"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+s</span></code></a> option, because it changes the way variables are handled and is thus
+not fully backwards compatible. It should, however, be easy to adapt
+existing programs to safe mode by making communication between state sets
+explicit. New programs should no longer use the traditional unsafe mode.</p>
+<div class="section" id="rationale">
+<h3>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h3>
+<p>In the traditional (unsafe) mode, variables are <em>not</em> protected against
+access from concurrently running threads. Concurrent access to SNL
+variables was introduced in version 2.0, when implementation of the PV
+layer switched from the old single threaded CA mode (“preemptive
+callbacks disabled”) to the multi-threaded mode (“preemptive callbacks
+enabled”) in order to support more than one state set per program. This
+could result in data corruption for variables that are not read and written
+atomically, the details of which are architecture and compiler dependent
+(i.e. plain <code class="docutils literal notranslate"><span class="pre">int</span></code> is typically atomic, whereas double is problematic on
+some, string and arrays on almost all architectures/compilers). Even for
+plain <code class="docutils literal notranslate"><span class="pre">int</span></code> variables, read-modify-write cycles (like <code class="docutils literal notranslate"><span class="pre">v++</span></code>) cannot be
+guaranteed to have any consistent result. Furthermore, <a class="reference internal" href="Reference.html#grammar-token-condition"><code class="xref any std std-token docutils literal notranslate"><span class="pre">condition</span></code></a>s that have
+been met inside a <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause cannot be relied upon to still hold
+inside the associated action block.</p>
+<p>Concurrent access to SNL variables happens when</p>
+<ul class="simple">
+<li><p>multiple state sets access the same variable, or</p></li>
+<li><p>variables are updated from the PV layer due to monitors
+and asynchronous get operations.</p></li>
+</ul>
+<p>While it is possible to avoid the first case by careful coding (using e.g.
+event flags for synchronization) it is not possible to guard against the
+second case as these events can interrupt action statements at any time.</p>
+<p>One of the reasons SNL programs have mostly worked in spite of this is
+that due to the standard CA thread priorities the callback thread does not
+interrupt the state set threads. Furthermore (and contrary to what many
+people believe) the VxWorks scheduler does not normally serve threads with
+equal priority in a round-robin (time-sliced) fashion; instead each thread
+keeps running until it gets interrupted by a higher priority thread or
+until it blocks on a semaphore.</p>
+<p>However, RTEMS does time-share threads at the same priority, while Linux and
+Windows may or may not honor thread priorities, depending on the system
+configuration. Most importantly, priorities should only be used to improve
+latency for certain operations (at the cost of others) and never should be
+relied upon for program correctness.</p>
+<p>Safe mode solves all these problems by changing the way variables,
+particularly global variables, are interpreted.</p>
+</div>
+<div class="section" id="how-it-works">
+<h3>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h3>
+<p>In safe mode, all variables
+–except event flags– are interpreted as if they were <em>local to the state
+set</em>. This means that setting a variable (even a global variable) in one
+state set does <em>not</em> automatically change its value as seen by other state
+sets. State sets are effectively isolated against each other, and all
+communication between them must be explicit. They are also isolated against
+updates by callbacks from the PV layer except at those points where they
+don’t do anything i.e. when they wait for events in a <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a> clause.
+In safe mode, variable values get updated right before the <a class="reference internal" href="Reference.html#grammar-token-condition"><code class="xref any std std-token docutils literal notranslate"><span class="pre">condition</span></code></a>s are
+evaluated, or when explicitly calling synchronization functions like
+<a class="reference internal" href="Reference.html#c.pvGetComplete" title="pvGetComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetComplete</span></code></a> or <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> (the latter only if called in
+synchronous mode), as well as <a class="reference internal" href="Reference.html#c.efTest" title="efTest"><code class="xref any c c-func docutils literal notranslate"><span class="pre">efTest</span></code></a> and <a class="reference internal" href="Reference.html#c.efTestAndClear" title="efTestAndClear"><code class="xref any c c-func docutils literal notranslate"><span class="pre">efTestAndClear</span></code></a>.
+The documentation for the built-in functions explains the details.</p>
+<p>For instance, with the declaration</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int var;
+assign var;
+</pre></div>
+</div>
+<p>the action statement</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvPut(var)
+</pre></div>
+</div>
+<p>makes the value of <code class="docutils literal notranslate"><span class="pre">var</span></code> available to other state sets. They will,
+however, not see the new value until they issue either a (synchronous)
+<a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a>, or the variable is declared as monitored and state
+change <a class="reference internal" href="Reference.html#grammar-token-condition"><code class="xref any std std-token docutils literal notranslate"><span class="pre">condition</span></code></a>s are evaluated.</p>
+<p>The action</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvGet(var, SYNC)
+</pre></div>
+</div>
+<p>updates <code class="docutils literal notranslate"><span class="pre">var</span></code> immediately with whatever has been written to it
+previously via <a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a> by some other state set. Whereas</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvGet(var, ASYNC)
+</pre></div>
+</div>
+<p>has no immediate effect on the variable <code class="docutils literal notranslate"><span class="pre">var</span></code>. Instead, <code class="docutils literal notranslate"><span class="pre">var</span></code>
+will be updated only if the code calls <a class="reference internal" href="Reference.html#c.pvGetComplete" title="pvGetComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetComplete</span></code></a>
+(and it returns <a class="reference internal" href="Glossary.html#term-true"><code class="xref any std std-term docutils literal notranslate"><span class="pre">true</span></code></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This behaviour is exactly the same as with external PVs.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using <a class="reference internal" href="Reference.html#c.compType" title="compType"><code class="xref any c c-type docutils literal notranslate"><span class="pre">SYNC</span></code></a> or <a class="reference internal" href="Reference.html#c.compType" title="compType"><code class="xref any c c-type docutils literal notranslate"><span class="pre">ASYNC</span></code></a> with anonymous PVs is not very
+useful since all operations complete immediately.</p>
+</div>
+</div>
+</div>
+<div class="section" id="common-pitfalls-and-misconceptions">
+<h2>Common Pitfalls and Misconceptions<a class="headerlink" href="#common-pitfalls-and-misconceptions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-delay-function-does-not-block">
+<h3>The delay function does not block<a class="headerlink" href="#the-delay-function-does-not-block" title="Permalink to this headline">¶</a></h3>
+<p>A common misconception among new SNL programmers is that the sequencer
+somehow blocks inside the <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a> function within <a class="reference internal" href="Reference.html#grammar-token--91"><code class="xref any std std-token docutils literal notranslate"><span class="pre">transition</span></code></a>
+statements. This interpretation of the <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a> function is
+incorrect but understandable given the name. The <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a> function
+does not block at all, it merely compares its argument with a timer that
+is reset whenever the state is entered (from the same or another state),
+and then returns the result (a boolean value). Any blocking (in case the
+returned value is FALSE and no other condition fires) is done outside of
+the <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a> function by the run time system. You might want to
+think of the operation as <code class="docutils literal notranslate"><span class="pre">elapsed(s)</span></code> rather than <code class="docutils literal notranslate"><span class="pre">delay(s)</span></code>.</p>
+<p>If your action statements have any sort of polling loops or calls to
+<code class="docutils literal notranslate"><span class="pre">epicsThreadSleep</span></code> you should reconsider your design. The presence
+of such operations is a strong indication that you’re not using the
+sequencer as intended.</p>
+</div>
+<div class="section" id="using-pvput-and-monitor-in-the-same-state-set">
+<h3>Using pvPut and monitor in the same state set<a class="headerlink" href="#using-pvput-and-monitor-in-the-same-state-set" title="Permalink to this headline">¶</a></h3>
+<p>Let’s say you have a channel variable x that is monitored, and this code
+fragment:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>state one {
+  when () {
+    x = 1;
+    pvPut(x);
+    x++;
+  } state two
+}
+state two {
+  when (x &gt; 1) {
+    do_something();
+  }
+  when (x &lt;= 1) {
+    do_something_else();
+  }
+}
+</pre></div>
+</div>
+<p>This pattern is hazardous in a number of ways. What exactly happens here
+depends on whether you are using <a class="reference internal" href="Reference.html#safe-mode"><span class="std std-ref">Safe Mode</span></a> or not.</p>
+<p>Assuming traditional (unsafe) mode, it is unpredictable which branch in
+state <code class="docutils literal notranslate"><span class="pre">two</span></code> will be taken. The <code class="docutils literal notranslate"><span class="pre">pvPut(x)</span></code> might cause a monitor event to
+be posted by the PV that was assigned to <code class="docutils literal notranslate"><span class="pre">x</span></code>. This event will change <code class="docutils literal notranslate"><span class="pre">x</span></code>
+back to <code class="docutils literal notranslate"><span class="pre">1</span></code> whenever it arrives. This might happen at any time in between
+the <code class="docutils literal notranslate"><span class="pre">pvPut(x)</span></code> and the testing of the conditions. It could even interrupt
+in the middle of the <code class="docutils literal notranslate"><span class="pre">x++</span></code> operation. As a result, this code behaves in
+conpletely unpredictable ways, depending on the timing of the pvPut-monitor
+round-trip.</p>
+<p>In <a class="reference internal" href="Reference.html#safe-mode"><span class="std std-ref">Safe Mode</span></a> things are slightly better: the only point where the event can
+lead to an update of the variable is <em>right before</em> evaluation of the
+conditions. However, it is still undetermined which branch will be taken.</p>
+<p>You might be tempted to test your code and find that “it works”, in the
+sense that the behavior you see appears to consistently chose one of the two
+branches, perhaps after adding some <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a>s to the conditions. But this
+impression is <strong>misleading</strong>, since what actually happens depends on details
+of thread scheduling and priorities and a host of other timing factors, some
+of which are very hard to control such as network or system load.</p>
+<p>If you cannot avoid using pvPut for a monitored variable, then you should at
+least</p>
+<ol class="arabic simple">
+<li><p>use <a class="reference internal" href="Reference.html#safe-mode"><span class="std std-ref">Safe Mode</span></a>, <em>and</em></p></li>
+<li><p>either</p>
+<ol class="loweralpha simple">
+<li><p>make sure any change you make to the variable gets published (using
+<a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a>) before you leave the current action block, <em>or</em></p></li>
+<li><p>refrain from changing it, and instead copy the value to some other
+variable and change <em>that</em>.</p></li>
+</ol>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
+<li><a class="reference internal" href="#a-first-example">A First Example</a></li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#built-in-pv-functions">Built-in PV Functions</a></li>
+<li><a class="reference internal" href="#a-complete-program">A Complete Program</a></li>
+<li><a class="reference internal" href="#adding-a-second-state-set">Adding a Second State Set</a></li>
+<li><a class="reference internal" href="#variable-initialization-and-entry-blocks">Variable Initialization and Entry Blocks</a></li>
+<li><a class="reference internal" href="#pv-names-using-program-parameters">PV Names Using Program Parameters</a></li>
+<li><a class="reference internal" href="#data-types">Data Types</a></li>
+<li><a class="reference internal" href="#arrays-of-variables">Arrays of Variables</a></li>
+<li><a class="reference internal" href="#dynamic-assignment">Dynamic Assignment</a></li>
+<li><a class="reference internal" href="#status-of-process-variables">Status of Process Variables</a></li>
+<li><a class="reference internal" href="#synchronizing-state-sets-with-event-flags">Synchronizing State Sets with Event Flags</a></li>
+<li><a class="reference internal" href="#queuing-monitors">Queuing Monitors</a></li>
+<li><a class="reference internal" href="#asynchronous-use-of-pvget">Asynchronous Use of pvGet</a></li>
+<li><a class="reference internal" href="#asynchronous-use-of-pvput">Asynchronous Use of pvPut</a></li>
+<li><a class="reference internal" href="#connection-management">Connection Management</a></li>
+<li><a class="reference internal" href="#multiple-instances-and-reentrant-object-code">Multiple Instances and Reentrant Object Code</a></li>
+<li><a class="reference internal" href="#process-variable-element-count">Process Variable Element Count</a></li>
+<li><a class="reference internal" href="#what-s-happening-at-run-time">What’s Happening at Run Time</a></li>
+<li><a class="reference internal" href="#safe-mode">Safe Mode</a><ul>
+<li><a class="reference internal" href="#rationale">Rationale</a></li>
+<li><a class="reference internal" href="#how-it-works">How it Works</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#common-pitfalls-and-misconceptions">Common Pitfalls and Misconceptions</a><ul>
+<li><a class="reference internal" href="#the-delay-function-does-not-block">The delay function does not block</a></li>
+<li><a class="reference internal" href="#using-pvput-and-monitor-in-the-same-state-set">Using pvPut and monitor in the same state set</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Installation.html"
+                        title="previous chapter">Download and Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Compiling.html"
+                        title="next chapter">Compiling SNL Programs</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

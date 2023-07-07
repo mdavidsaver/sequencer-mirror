@@ -1,0 +1,861 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Release Notes for Version 2.2 &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Known Problems" href="KnownProblems.html" />
+    <link rel="prev" title="Examples of SNL Programs" href="Examples.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="KnownProblems.html" title="Known Problems"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Examples.html" title="Examples of SNL Programs"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Release Notes for Version 2.2</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="release-notes-for-version-2-2">
+<h1>Release Notes for Version 2.2<a class="headerlink" href="#release-notes-for-version-2-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="release-2-2-9">
+<span id="release-notes-2-2-9"></span><h2>Release 2.2.9<a class="headerlink" href="#release-2-2-9" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><p>install build rules in the modern way (if available)</p>
+<p>This allows installation into the same directory as EPICS base and other
+modules, e.g. when packaging for Debian.</p>
+<p>The configure/RULES_BUILD is replaced with configure/RULES_SNCSEQ and gets
+installed via CFG. For compatibility with base-3.14, configure/RULES_BUILD
+now includes the configure/RULES_SNCSEQ. The rules are protected against
+multiple inclusion with a variable definition (like with C headers).</p>
+<p>Thanks to Michael Davidsaver &lt;<a class="reference external" href="mailto:mdavidsaver&#37;&#52;&#48;gmail&#46;com">mdavidsaver<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt; for the patch (slightly
+modified).</p>
+</li>
+<li><p>snc: better error messages when file operations fail</p>
+<p>Instead of calling perror, we now use strerror and our internal ‘report’
+function to conveniently compose a more detailed error message.</p>
+</li>
+<li><p>snc, build rules: improve behavior when compilation fails</p>
+<p>This changes snc so that it either doesn’t touch the output file at all or
+else removes it if there was an error. In addition, the build rules are
+changed so that output files are removed before trying to create them.</p>
+<p>Thanks to Johnson, Andrew N. &lt;<a class="reference external" href="mailto:anj&#37;&#52;&#48;anl&#46;gov">anj<span>&#64;</span>anl<span>&#46;</span>gov</a>&gt; for analysis and patch (slightly
+modified, all errors are mine).</p>
+</li>
+<li><p>tests: add test for (non-)existence of output file</p></li>
+<li><p>docs: fix code examples in tutorial</p>
+<p>Thanks to <a class="reference external" href="mailto:luka&#46;krmpotic&#37;&#52;&#48;cosylab&#46;com">luka<span>&#46;</span>krmpotic<span>&#64;</span>cosylab<span>&#46;</span>com</a> for the reporting these.</p>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="release-2-2-8">
+<span id="release-notes-2-2-8"></span><h2>Release 2.2.8<a class="headerlink" href="#release-2-2-8" title="Permalink to this headline">¶</a></h2>
+<p>This relase only fixes a build problem on MacOS.</p>
+</div>
+<div class="section" id="release-2-2-7">
+<span id="release-notes-2-2-7"></span><h2>Release 2.2.7<a class="headerlink" href="#release-2-2-7" title="Permalink to this headline">¶</a></h2>
+<p>Bug fixes:</p>
+<ul>
+<li><p>fix: pvGet should not request more elements than the channel has</p>
+<p>Otherwise the CA call will fail and we get no data at all.</p>
+<p>Thanks to Dejan Kocjan &lt;<a class="reference external" href="mailto:dejan&#46;kocjan&#37;&#52;&#48;cosylab&#46;com">dejan<span>&#46;</span>kocjan<span>&#64;</span>cosylab<span>&#46;</span>com</a>&gt; for finding the cause of
+this problem and proposing the fix.</p>
+</li>
+<li><p>tests: extend array test with pvPut and pvGet</p>
+<p>This tests that both work as expected even if the declared array size is
+shorter or longer than the native array size of the PV.</p>
+</li>
+<li><p>fix a bug in seqMacParse</p>
+<p>When the value of a parameter is the unquoted empty string as in “var=”,
+this would not be recognized and the default value was used instead. Just a
+stupid unnecessary explicit test I had to remove. Thanks to Hovanes Egiyan
+for reporting this problem.</p>
+</li>
+<li><p>Fix build problems in examples/ on Windows</p>
+<p>The registerRecordDeviceDriver.pl script generates code that on Windows
+requires symbols named in the DBD file to be linked from an DLL, not from a
+directly-linked source file. When main() is directly linked with an object
+file containing a registrar entry, we can call that registrar code directly
+from main() as done here instead of using the generated code.</p>
+<p>These build errors may only appear when using a MinGW compiler, either
+native or as a cross-build running on another OS.</p>
+</li>
+<li><p>fix PROD_LIBS definition in test/unit/Makefile</p>
+<p>Thanks to Michael Davidsaver &lt;<a class="reference external" href="mailto:mdavidsaver&#37;&#52;&#48;gmail&#46;com">mdavidsaver<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt; for spotting this.</p>
+</li>
+<li><p>fix: add missing braces around if body in seqShowAll</p></li>
+<li><p>fix #if expression to determine whether base &lt; 3.14.10</p></li>
+</ul>
+<p>Various minor improvements:</p>
+<ul class="simple">
+<li><p>build: add standard includes to configure/{RELEASE,CONFIG_SITE}</p></li>
+<li><p>examples/demo: use $EPICS_HOST_ARCH in runme.sh</p></li>
+<li><p>add a small example to test program parameters</p></li>
+<li><p>docs: adapt how to invoke the demo program</p></li>
+<li><p>docs: made blockdiags a bit more readable</p></li>
+</ul>
+</div>
+<div class="section" id="release-2-2-6">
+<span id="release-notes-2-2-6"></span><h2>Release 2.2.6<a class="headerlink" href="#release-2-2-6" title="Permalink to this headline">¶</a></h2>
+<p>Building against EPICS base 7.x:</p>
+<ul class="simple">
+<li><p>locally define USE_TYPED_RSET to avoid deprecation warnings</p></li>
+<li><p>fix definition of EPICS_HAS_UNIT_TEST for base versions &gt; 3</p></li>
+</ul>
+<p>Also made a few minor changes to the documentation.</p>
+</div>
+<div class="section" id="release-2-2-5">
+<span id="release-notes-2-2-5"></span><h2>Release 2.2.5<a class="headerlink" href="#release-2-2-5" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>docs: use RMDIR instead of rm -rf for clean target in the Makefile</p>
+<p>This fixes (harmless but annoying) error messages on Windows.</p>
+</li>
+<li><p>snc: use mkmf.pl to generate the dependencies</p>
+<p>This fixes error messages and sometimes also build failures during parallel
+builds on Linux machines iwth many cores. These are caused by EPICS build
+rules not passing -MD to gcc when generating dependencies for C source files.</p>
+</li>
+<li><p>snc: fixed C90 incompatibility in the parser template, see <a class="reference internal" href="KnownProblems.html#known-problems-2-2-4"><span class="std std-ref">Known Problems in Release 2.2.4</span></a>.</p></li>
+</ul>
+</div>
+<div class="section" id="release-2-2-4">
+<span id="release-notes-2-2-4"></span><h2>Release 2.2.4<a class="headerlink" href="#release-2-2-4" title="Permalink to this headline">¶</a></h2>
+<p>code:</p>
+<ul>
+<li><p>seq: fixed a possible race condition with pvAssign</p>
+<p>The problem concerns access to the dbch member of CHAN: the runtime pvAssign
+may free this pointer (and also sets it to NULL); on the other hand, the CA
+callbacks need to access it, or else must return immediately. There was a
+test that checks if dbch is NULL but it was not locked against concurrent
+access from pvAssign, which could lead to an assertion failure or worse to
+invalid memory accesses.</p>
+</li>
+<li><p>seq: in pvFlushQ test that queue and associated event flag of the channel
+actually exist before accessing them.</p>
+<p>This fixes possible crashes when using this function with non-queued or
+queued but non-synced channels.</p>
+</li>
+<li><p>pv: fix test for result of epicsTimeGetCurrent</p>
+<p>This change fixes a problem with EPICS base-3.16, which adds more error
+codes to epicsTime.</p>
+</li>
+<li><p>lemon: updated lemon.c and the parser template from upstream</p>
+<p>This was done to avoid 64 bit problems that the native Windows compiler
+warned about, since such problems are usually handled quite efficiently by
+the sqlite maintainers. Unfortunately the latest version of the parser
+template had a serious bug that could result in compiler crashes. This bug
+has been fixed in the sequencer (and reported, but not yet fixed, in the
+upstream version). This in turn uncovered a weakness in the compiler
+tests, see below.</p>
+</li>
+</ul>
+<p>docs:</p>
+<ul>
+<li><p>fixed errors in section “Asynchronous Use of pvPut” of tutorial</p>
+<p>Thanks to Christian Pulvermacher &lt;<a class="reference external" href="mailto:christian&#46;pulvermacher&#37;&#52;&#48;kek&#46;jp">christian<span>&#46;</span>pulvermacher<span>&#64;</span>kek<span>&#46;</span>jp</a>&gt; for
+spotting this.</p>
+</li>
+</ul>
+<p>build system:</p>
+<ul>
+<li><p>snc: turn LEMON into an absolute path with base 3.15</p>
+<p>This fixes a build problem on some Windows versions which don’t like
+relative path names for commands when the output is redirected to a file.</p>
+</li>
+<li><p>snc: extra dependency avoids (harmless) errors when generating .d files</p></li>
+<li><p>snc: simplify the multi-target lemon rule</p>
+<p>Instead of generating an intermediate file (“parser_created”) we now use a
+pattern rule. This is the more reliable (and recommended) way to make rules
+with multiple targets work as expected.</p>
+</li>
+<li><p>test only for BASE_3_14==YES</p>
+<p>Testing for 3.15 doesn’t make sense (yet), as the majority of changes
+will be needed for 3.16 and later versions, too. Testing BASE_3_15==YES
+will be reserved for incompatibilities between 3.15 and 3.16 etc.</p>
+</li>
+<li><p>avoid deprecation warnings for use of PATH_FILTER with base 3.15</p></li>
+<li><p>snc: make recipe for snl.bnf atomic</p></li>
+</ul>
+<p>test/examples:</p>
+<ul>
+<li><p>moved test for invalid state change statement to compiler tests</p></li>
+<li><p>moved demo programs from test/validate to examples/small</p>
+<p>The programs are only compiled as TESTPROD_HOST to avoid cluttering the
+install directories any further; db files can be served using the standard
+softIoc binary from base.</p>
+</li>
+<li><p>added timer.st to examples</p></li>
+<li><p>refactor killing background IOCs</p></li>
+<li><p>test that snc terminates normally on all input programs</p>
+<p>Previously, in case snc crashes on some input file, it was possible that
+this was not detected by the tests.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="release-2-2-3">
+<span id="release-notes-2-2-3"></span><h2>Release 2.2.3<a class="headerlink" href="#release-2-2-3" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to the new co-maintainer Freddie Akeroyd &lt;<a class="reference external" href="mailto:freddie&#46;akeroyd&#37;&#52;&#48;stfc&#46;ac&#46;uk">freddie<span>&#46;</span>akeroyd<span>&#64;</span>stfc<span>&#46;</span>ac<span>&#46;</span>uk</a>&gt;
+this release fixes building and running the tests for Windows7 in 32 and 64
+bit, both with cygwin and native compiler. Please note that parallel building
+may not work on Windows yet.</p>
+<p>A few bugs have been fixed and some minor improvements made here or there,
+for details see the list below.</p>
+<p>snc:</p>
+<ul class="simple">
+<li><p>cast 0 to Node* in varargs call to node constructor</p></li>
+<li><p>added a missing include to types.h</p></li>
+<li><p>explain apparently missing var init in a comment</p></li>
+<li><p>fix warnings and error when DEBUG is defined</p></li>
+</ul>
+<p>seq:</p>
+<ul>
+<li><p>Initialise timeNow</p>
+<p>Required for running tests with windows debug build</p>
+</li>
+<li><p>fix default put during a pending async put</p>
+<p>Attempting to issue a DEFAULT pvPut even when an ASYNC put is already
+pending on the same variable led to an assertion failure. This is now fixed.</p>
+</li>
+</ul>
+<p>common:</p>
+<ul>
+<li><p>cleaned up the prim_types mess, snc no longer depends on seq library</p>
+<p>Making the compiler depend on the seq library was a bad idea, since the
+names of the primitive types were the only thing that snc needed from seq.</p>
+<p>Instead I added a new src/common subdir that installs (and for seq_release.h
+generates) the header files that are shared between the compiler and the
+runtime. The epicsShare stuff has been removed from seq_prim_types.h. A new
+preprocessor symbol (declare_prim_type_names) makes sure that the
+prim_type_name and prim_type_tag_name variables are visible only inside the
+runtime library and the compiler and not  in generated sequencer programs.</p>
+</li>
+</ul>
+<p>test:</p>
+<ul>
+<li><p>Set PATH for running tests in shared build</p>
+<p>The path to seq.dll needs to be set in cygwin and Windows for running
+tests when built with SHARED_LIBRARIES=YES</p>
+</li>
+<li><p>Fix running tests on Windows</p>
+<p>The *Ioc.t tests were hanging on windows when run from Make - they
+worked when ran individually from the command line, but were not then
+killing the background IOC process on test completion. Using the
+Win32::Process package rather than fork() to create subprocesses fixes
+both issues</p>
+</li>
+<li><p>set environment variables in a more portable way</p></li>
+<li><p>silence warnings about different TOP dirs</p></li>
+<li><p>ensure that tests cover seq exit phase</p></li>
+<li><p>Reorder test linking for cygwin</p>
+<p>Move subThreadSleep.c to separate library to enable correct import/export
+declarations for linking on cygwin</p>
+</li>
+<li><p>enable pvSync with or without db</p></li>
+<li><p>set HARNESS_ACTIVE env var in queueTest.plt</p></li>
+<li><p>use a per host “unique” CA server port</p>
+<p>The idea here is to isolate concurrent test runs on the same machine against
+each other. The port is set to 10000 + pid % 30000, which is not unique in a
+strict sense, but the probability of a collision is quite small and the
+solution is non-intrusive and very simple to implement.</p>
+</li>
+</ul>
+<p>examples/demo:</p>
+<ul>
+<li><p>link specific code into a library instead of main</p>
+<p>This fixes problems for cygwin-x86 arch.</p>
+</li>
+</ul>
+<p>build system:</p>
+<ul class="simple">
+<li><p>added include of meta build configuration to configure/RELEASE</p></li>
+<li><p>removed configure/RELEASE.win32-x86</p></li>
+</ul>
+</div>
+<div class="section" id="release-2-2-2">
+<span id="release-notes-2-2-2"></span><h2>Release 2.2.2<a class="headerlink" href="#release-2-2-2" title="Permalink to this headline">¶</a></h2>
+<p>The bugs listed in <a class="reference internal" href="KnownProblems.html#known-problems-2-2-1"><span class="std std-ref">Known Problems in Release 2.2.1</span></a> have been fixed.</p>
+<p>In addition, some of the tests and parts of the test infrastructure have
+been changed so as to produce clean TAP files (this is currently only
+supported by base-3.15 with ‘make tapfiles’). For the same reason, the usual
+messages when a program starts are no longer issued with printf, but rather
+with errlogSevPrintf(errlogInfo,…).</p>
+<p>Some improvements to the web pages have been made: the version the pages
+refer to is more prominently visible, some shortcuts have been renamed, and
+side-bar shortcuts to all other (maintained) versions were added.</p>
+<p>I added git mirrors of the darcs repos, the URLs are:</p>
+<p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-1.git">http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-1.git</a>
+<a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-2.git">http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-2.git</a>
+<a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-3.git">http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-3.git</a></p>
+</div>
+<div class="section" id="release-2-2-1">
+<span id="release-notes-2-2-1"></span><h2>Release 2.2.1<a class="headerlink" href="#release-2-2-1" title="Permalink to this headline">¶</a></h2>
+<p>This is the first release of version 2.2 of the sequencer. The following
+describes what has changed relative to version 2.1.</p>
+<div class="section" id="supported-epics-base-versions">
+<h3>Supported EPICS Base Versions<a class="headerlink" href="#supported-epics-base-versions" title="Permalink to this headline">¶</a></h3>
+<p>This version drops support for base versions older than 3.14.12.2, all
+others should work fine.</p>
+<p>If you manage to compile the sequencer with earlier base versions, well,
+good for you. It’ll probably work, too. I will also accept patches that
+restore lost compatibility with older base versions, provided they achieve
+this without unduly complicating the code base or build system.</p>
+</div>
+<div class="section" id="new-language-features">
+<h3>New Language Features<a class="headerlink" href="#new-language-features" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="foreign-types">
+<h4>Foreign Types<a class="headerlink" href="#foreign-types" title="Permalink to this headline">¶</a></h4>
+<p>It is now possible to use foreign types (i.e. types declared in C code, such
+as structs, enums, unions, and typedefs) in variable declarations, type
+casts, and the special “sizeof” built-in operator. Previously existing
+restrictions as to which type expressions are allowed have been lifted, so
+that (almost) everything you can say in C is now supported in SNL, too.
+Particularly, function types are now supported in declarations and type
+expressions, as well as indirect calls in expressions.</p>
+<p>There are two notable limitations:</p>
+<ul class="simple">
+<li><p>Using C <em>type aliases</em> (defined in C with <code class="docutils literal notranslate"><span class="pre">typedef</span></code>) is allowed, but you
+must prefix the type name with the new keyword <code class="docutils literal notranslate"><span class="pre">typename</span></code> (which I
+borrowed from C++). Supporting foreign typedefs without any extra markup
+as in C would require lots of extra effort which IMO is not justified.</p></li>
+<li><p>There is only limited support for <em>defining</em> your own types (see <a class="reference internal" href="#type-definitions">Type
+Definitions</a> below) and you cannot mix type definition with type usage
+(for instance in a variable declaration) as in C.</p></li>
+</ul>
+<p>The words <code class="docutils literal notranslate"><span class="pre">enum</span></code>, <code class="docutils literal notranslate"><span class="pre">struct</span></code>, <code class="docutils literal notranslate"><span class="pre">typename</span></code>, <code class="docutils literal notranslate"><span class="pre">union</span></code>, and <code class="docutils literal notranslate"><span class="pre">void</span></code> are
+reserved words now and can no longer be used as identifiers.</p>
+</div>
+<div class="section" id="other-foreign-entities">
+<h4>Other Foreign Entities<a class="headerlink" href="#other-foreign-entities" title="Permalink to this headline">¶</a></h4>
+<p>A side effect of allowing indirect calls is that there is no longer any
+<em>syntactic</em> distinction between using functions and using variables. This
+means that issuing warnings just for the use of undeclared foreign
+<em>variables</em> is no longer possible. If they are still undeclared in the
+generated C code, the C compiler will warn you anyway. You can enable extra
+warnings (<a class="reference internal" href="Compiling.html#cmdoption-arg-W"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+W</span></code></a>, see <a class="reference internal" href="#new-option-for-extra-warnings">New Option for Extra Warnings</a> below) to get
+these warnings, but that will report foreign functions, too.</p>
+<p>A related change is that struct or union members are no longer identified
+with variables in the SNL syntax; members are no longer considered to be
+foreign entities (but for compatibility you can still list them in a foreign
+declaration).</p>
+</div>
+<div class="section" id="function-definitions">
+<h4>Function Definitions<a class="headerlink" href="#function-definitions" title="Permalink to this headline">¶</a></h4>
+<p>You can now define functions in SNL. The syntax is like in C and you <em>can</em>
+call the built-in PV functions inside them. This is made possible by passing
+the execution context (the state set identifier and the variable block
+pointer) as hidden parameters.</p>
+<p>You may pass all kinds of variables to such a function, but for channel
+(“assigned”) variables their special “assigned” status gets lost when
+passing them, similar as when passing them to a C function. This means you
+can call e.g. pvGet(x) in the body of an SNL function, but only if x is a
+global variable.</p>
+<p>My various attempts to lift this limitation were the main reason it took me
+so much longer than I had expected to make this release. In order not to
+hold up the release of version 2.2 any longer, I decided to postpone this
+feature to a future release.</p>
+</div>
+<div class="section" id="type-definitions">
+<h4>Type Definitions<a class="headerlink" href="#type-definitions" title="Permalink to this headline">¶</a></h4>
+<p>You can now define your own struct types in SNL (other type formers like
+union and enum are not yet supported). As usual the syntax is a (simplified:
+no bit fields) variant of the C syntax. This is currently not very useful,
+since there is no way to “assign” struct members to PVs. Lifting this
+limitation is closely related to passing channel arguments to functions and
+therefore postponed, too.</p>
+</div>
+<div class="section" id="new-option-for-extra-warnings">
+<h4>New Option for Extra Warnings<a class="headerlink" href="#new-option-for-extra-warnings" title="Permalink to this headline">¶</a></h4>
+<p>The new option:<a class="reference internal" href="Compiling.html#cmdoption-arg-W"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+W</span></code></a> (off by default) enables extra warnings, that you
+normally don’t want to see. Currently this warns you once for each foreign
+entity that appears in the program.</p>
+</div>
+</div>
+<div class="section" id="deprecated-and-removed-features">
+<h3>Deprecated and Removed Features<a class="headerlink" href="#deprecated-and-removed-features" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="deprecated-foreign-declarations">
+<h4>Deprecated Foreign Declarations<a class="headerlink" href="#deprecated-foreign-declarations" title="Permalink to this headline">¶</a></h4>
+<p>The so called “foreign entity declarations”, introduced in version 2.1, have
+become obsolete (see <a class="reference internal" href="#other-foreign-entities">Other Foreign Entities</a>) and are therefore
+<em>deprecated</em>.</p>
+</div>
+<div class="section" id="deprecated-state-local-assign-etc">
+<h4>Deprecated State Local <code class="docutils literal notranslate"><span class="pre">assign</span></code> etc<a class="headerlink" href="#deprecated-state-local-assign-etc" title="Permalink to this headline">¶</a></h4>
+<p>Using an <a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a>, <a class="reference internal" href="Reference.html#grammar-token-monitor"><code class="xref any std std-token docutils literal notranslate"><span class="pre">monitor</span></code></a>, <a class="reference internal" href="Reference.html#grammar-token-sync"><code class="xref any std std-token docutils literal notranslate"><span class="pre">sync</span></code></a>, or <a class="reference internal" href="Reference.html#grammar-token--74"><code class="xref any std std-token docutils literal notranslate"><span class="pre">syncq</span></code></a> clause inside a state is
+now deprecated. This was never very useful to begin with, and gets in the
+way of some future improvements.</p>
+</div>
+<div class="section" id="removed-keyword-connect">
+<h4>Removed Keyword “connect”<a class="headerlink" href="#removed-keyword-connect" title="Permalink to this headline">¶</a></h4>
+<p>This alias for the “assign” keyword, also introduced in version 2.1, is no
+longer supported. I believe nobody actually uses it, and the next version
+will introduce a completely new syntax for that feature anyway. I can demote
+the removal to a deprecation warning if it turns out that this seriously
+hurts people.</p>
+<p>With hindsight, introducing this was a bad idea, as were foreign
+declarations and state local assign.</p>
+</div>
+<div class="section" id="removed-pv-library">
+<h4>Removed PV Library<a class="headerlink" href="#removed-pv-library" title="Permalink to this headline">¶</a></h4>
+<p>The PV library has been almost completely eliminated. What remains is a thin
+layer over CA, implemented in C, and offering only the functionality that is
+actually needed by the sequencer. The API is similar (but not identical) to
+the old C API; particularly, all the pvStat, pvSevr, and pvType definitions
+are as before.</p>
+<p>The documentation for the PV layer has been removed, too. The only remaining
+user relevant part of the interface is contained in pvAlarm.h, see
+<a class="reference internal" href="#built-in-constants">Built-in Constants</a>.</p>
+<p>Also removed were the Keck examples and the KTL related stuff in other example
+directories.</p>
+</div>
+<div class="section" id="removed-devsequencer">
+<h4>Removed devSequencer<a class="headerlink" href="#removed-devsequencer" title="Permalink to this headline">¶</a></h4>
+<p>The (broken and ugly) sequencer device support was removed.
+Consequently, seqFindProgByName was be removed as it is no longer needed.</p>
+</div>
+</div>
+<div class="section" id="built-in-constants">
+<h3>Built-in Constants<a class="headerlink" href="#built-in-constants" title="Permalink to this headline">¶</a></h3>
+<p>All built-in constants are now known to <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> and therefore no longer
+treated as foreign entities. Particularly, using them no longer gives
+“undefined variable” warnings, even with extra warnings enabled
+(<a class="reference internal" href="Compiling.html#cmdoption-arg-W"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+W</span></code></a>). They are also documented in the reference.</p>
+<p>The <em>snc</em>-generated C code for built-in constants now uses the name of the
+constant, instead of its value. This makes the code a bit more readable and
+slightly simplifies code generation.</p>
+<p>The variables <code class="docutils literal notranslate"><span class="pre">ssId</span></code> and <code class="docutils literal notranslate"><span class="pre">pVar</span></code> are (somewhat irregularly) treated as
+built-in constants, too. This makes it possible to call C functions that
+take them as a parameter directly from inside SNL code without having to
+escape the call. That is, you can now write such calls as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>my_c_fun(ssId, pVar, ...);
+</pre></div>
+</div>
+<p>instead of</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>%%my_c_fun(ssId, pVar, ...);
+</pre></div>
+</div>
+</div>
+<div class="section" id="built-in-functions">
+<h3>Built-in Functions<a class="headerlink" href="#built-in-functions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="reported-severity-of-failures">
+<h4>Reported Severity of Failures<a class="headerlink" href="#reported-severity-of-failures" title="Permalink to this headline">¶</a></h4>
+<p>The severity of timeouts and usage errors reported on the console has been
+demoted from <code class="docutils literal notranslate"><span class="pre">errlogFatal</span></code> to <code class="docutils literal notranslate"><span class="pre">errlogMajor</span></code>. Reporting them as fatal has
+misled users in the past to think that their running program instances have
+become unstable now, which is definitely not the case for this sort of
+errors.</p>
+</div>
+<div class="section" id="pvmessage">
+<h4>pvMessage<a class="headerlink" href="#pvmessage" title="Permalink to this headline">¶</a></h4>
+<p>The built-in function <a class="reference internal" href="Reference.html#c.pvMessage" title="pvMessage"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvMessage</span></code></a> now consistently returns a failure string
+describing the problem whenever anything with the passed channel variable
+went wrong. This particularly applies to any failure status returned from
+the CA layer.</p>
+</div>
+<div class="section" id="new-delay-implementation">
+<h4>New Delay Implementation<a class="headerlink" href="#new-delay-implementation" title="Permalink to this headline">¶</a></h4>
+<p>While it was always <em>allowed</em> to use arbitrary SNL expressions for the
+argument to <a class="reference internal" href="Reference.html#c.delay" title="delay"><code class="xref any c c-func docutils literal notranslate"><span class="pre">delay</span></code></a>, even expressions that could change their value
+at any time (e.g. because they contain monitored variables), this did <em>not</em>
+work as one would expect. In fact, the delay expression would be evaluated
+just once for all delays appearing in conditions inside a state when the
+state was entered. Later checks whether the delay has expired used the
+cached delay value.</p>
+<p>In the new (much simpler) implementation, delay expressions are evaluated
+like all other parts of the state transition condition. Delay IDs no longer
+exist and the code generator treats calls to delay like any other built-in
+function. The effect of delaying the state transition is now achieved
+(completely internal to the implementation of seq_delay) by adjusting the
+minimum time to wait for events (if the delay has not yet expired). The
+run-time system no longer stores the delay, but rather the (future) time
+when the wake-up should happen, leading to more accurate timing of delays.</p>
+<p>Since calling delay outside of the condition of a state transition never had
+any useful effect, it is now disallowed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The prototype of the underlying C function seq_delay() has changed to
+support the new implementation. If there is code out there which calls
+this function from the C side, I’d venture that it is broken anyway and
+should be fixed.</p>
+</div>
+</div>
+<div class="section" id="pvassignsubst">
+<h4>pvAssignSubst<a class="headerlink" href="#pvassignsubst" title="Permalink to this headline">¶</a></h4>
+<p>Unlike the <a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a> clause, the dynamic <a class="reference internal" href="Reference.html#c.pvAssign" title="pvAssign"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvAssign</span></code></a> function does not
+substitute program parameters (previously sometimes referred to as “macros”)
+in the channel name. There is now a new function <a class="reference internal" href="Reference.html#c.pvAssignSubst" title="pvAssignSubst"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvAssignSubst</span></code></a> that
+behaves exactly like <a class="reference internal" href="Reference.html#c.pvAssign" title="pvAssign"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvAssign</span></code></a> except that it substitutes program
+parameters in the channel name, just like <a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a> does.</p>
+</div>
+<div class="section" id="pv-functions-and-multiply-assigned-arrays">
+<h4>PV Functions and Multiply Assigned Arrays<a class="headerlink" href="#pv-functions-and-multiply-assigned-arrays" title="Permalink to this headline">¶</a></h4>
+<p>A long time wart of the sequencer, inherited from the 2.0 version, was the
+behaviour of built-in PV functions when you pass an array in which elements
+are assigned to separate PVs. In most cases (except one, see below) this
+behaved as if you had passed in just the first element of the array, which
+is inconsistent and error-prone.</p>
+<p>However, existing programs might (perhaps without the author or maintainer
+being aware of it) rely on the current behaviour – and silently breaking
+such programs seems like a bad idea. Instead, this is now a <em>compile time
+error</em>. The error message contains a hint how the user can fix their program
+(“perhaps you meant to pass xxx[0]?”) so that it retains its old behaviour.</p>
+<p>For some of the PV functions, operating on all contained PVs of a multi-PV
+array would make sense if one would be willing to overload them. I decided
+against that and instead provide a number of new functions named
+“pvArray…”:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="Reference.html#c.pvArrayGetComplete" title="pvArrayGetComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayGetComplete</span></code></a></p></li>
+<li><p><a class="reference internal" href="Reference.html#c.pvArrayMonitor" title="pvArrayMonitor"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayMonitor</span></code></a></p></li>
+<li><p><a class="reference internal" href="Reference.html#c.pvArrayPutComplete" title="pvArrayPutComplete"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayPutComplete</span></code></a></p></li>
+<li><p><a class="reference internal" href="Reference.html#c.pvArrayStopMonitor" title="pvArrayStopMonitor"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayStopMonitor</span></code></a></p></li>
+<li><p><a class="reference internal" href="Reference.html#c.pvArraySync" title="pvArraySync"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArraySync</span></code></a></p></li>
+<li><p><a class="reference internal" href="Reference.html#c.pvArrayConnected" title="pvArrayConnected"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayConnected</span></code></a></p></li>
+</ul>
+<p>I may add <code class="docutils literal notranslate"><span class="pre">pvArrayGet</span></code> and <code class="docutils literal notranslate"><span class="pre">pvArrayPut</span></code> in the future. Especially for
+the <a class="reference internal" href="Reference.html#c.compType" title="compType"><code class="xref any c c-type docutils literal notranslate"><span class="pre">SYNC</span></code></a> variant, such functions could be implemented (much)
+more efficiently than the semantically equivalent loop over all elements of
+the array.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The C side equivalents seq_pvArray… are not (yet) part of the public
+API. The reason is that in version 2.3 they will get a slightly different
+type. You can use them in embedded C code but if you do that you should be
+aware that your program might not work or even build with version 2.3.</p>
+</div>
+</div>
+<div class="section" id="timeout-arguments-for-pvget-and-pvput">
+<h4>Timeout Arguments for pvGet and pvPut<a class="headerlink" href="#timeout-arguments-for-pvget-and-pvput" title="Permalink to this headline">¶</a></h4>
+<p>For both <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> and <a class="reference internal" href="Reference.html#c.pvPut" title="pvPut"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPut</span></code></a> there is now the possibility to
+specify a timeout that differs from the default of 10 seconds. This is done
+by giving an extra argument after the <code class="docutils literal notranslate"><span class="pre">SYNC</span></code> keyword, as in:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pvGet(var,SYNC,1.0);
+</pre></div>
+</div>
+<p>As before, the default behaviour for <code class="docutils literal notranslate"><span class="pre">pvGet(var)</span></code> i.e. neither an explicit
+<code class="docutils literal notranslate"><span class="pre">SYNC</span></code> nor <code class="docutils literal notranslate"><span class="pre">ASYNC</span></code>, is synchronous, unless option <a class="reference internal" href="Compiling.html#cmdoption-a"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-a</span></code></a> is in
+effect. In this case, or if <code class="docutils literal notranslate"><span class="pre">SYNC</span></code> is given with no extra argument, the
+standard default timeout of 10 seconds is assumed.</p>
+<p>In contrast to previous releases of version 2.2, the C equivalents are
+unchanged with respect to version 2.1. Instead, the compiler generates calls
+to <code class="docutils literal notranslate"><span class="pre">seq_pvGetTmo</span></code> or <code class="docutils literal notranslate"><span class="pre">seq_pvPutTmo</span></code> which have the additional argument.</p>
+</div>
+<div class="section" id="new-built-in-functions-pvgetcancel-and-pvputcancel">
+<h4>New Built-in Functions pvGetCancel and pvPutCancel<a class="headerlink" href="#new-built-in-functions-pvgetcancel-and-pvputcancel" title="Permalink to this headline">¶</a></h4>
+<p>It is now possible to cancel and asynchronous get or put request by calling
+<a class="reference internal" href="Reference.html#c.pvGetCancel" title="pvGetCancel"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGetCancel</span></code></a> or <a class="reference internal" href="Reference.html#c.pvPutCancel" title="pvPutCancel"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvPutCancel</span></code></a>, or the channel array variants
+<a class="reference internal" href="Reference.html#c.pvArrayGetCancel" title="pvArrayGetCancel"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayGetCancel</span></code></a> or <a class="reference internal" href="Reference.html#c.pvArrayPutCancel" title="pvArrayPutCancel"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvArrayPutCancel</span></code></a>, respectively.</p>
+</div>
+</div>
+<div class="section" id="generated-c-code">
+<h3>Generated C Code<a class="headerlink" href="#generated-c-code" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="order-of-definitions">
+<h4>Order of Definitions<a class="headerlink" href="#order-of-definitions" title="Permalink to this headline">¶</a></h4>
+<p>The first change here is that the generated variable block is now placed
+<em>after</em> all other top-level definitions that appear in the program before
+the first state set, in particular before escaped C code. In previous
+versions, this was the other way around. The second change is that for all
+other top-level definitions the order is retained exactly as in the SNL
+source file.</p>
+<p>This was done so that foreign type declarations can be used in global (SNL)
+variable declarations. This concerns types imported via <code class="docutils literal notranslate"><span class="pre">%%#include</span></code>
+as well as types defined in escaped C code.</p>
+<p>Note that this means that escaped C code that appears before the first state
+set cannot access global variables declared in SNL, even if the re-entrant
+option is not in effect. Such C code should now be placed after the last
+state set.</p>
+<p>Anyway, it is my hope that the possibility to write functions directly in
+SNL will make the escape-to-C route mostly obsolete.</p>
+</div>
+<div class="section" id="names-of-generated-entities">
+<h4>Names of Generated Entities<a class="headerlink" href="#names-of-generated-entities" title="Permalink to this headline">¶</a></h4>
+<p>These now follow a strict naming convention:</p>
+<blockquote>
+<div><p>Generated names start with <code class="docutils literal notranslate"><span class="pre">seqg_</span></code>.</p>
+</div></blockquote>
+<p>In particular, <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">UserVar</span></code> became <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">seqg_var</span></code>, and the
+implicit parameters <code class="docutils literal notranslate"><span class="pre">ssId</span></code> and <code class="docutils literal notranslate"><span class="pre">pVar</span></code> are now named <code class="docutils literal notranslate"><span class="pre">seqg_ss</span></code> and
+<code class="docutils literal notranslate"><span class="pre">seqg_var</span></code>, respectively. Because these three identifiers are often
+referenced in escaped C code, I have added compatibility aliases for them,
+so as not to break existing programs. See <a class="reference internal" href="#external-api">External API</a> below for details.</p>
+<p>In order to prevent name clashes, words starting with <code class="docutils literal notranslate"><span class="pre">seqg_</span></code> are no longer
+valid identifiers in SNL.</p>
+<p>I am aware that there may be cases where this change breaks existing
+programs which heavily rely on escape to C code. If this is the case, please
+shout! Adding more compatibility aliases can be done any time.</p>
+</div>
+<div class="section" id="event-flags">
+<h4>Event Flags<a class="headerlink" href="#event-flags" title="Permalink to this headline">¶</a></h4>
+<p>The compiler now generates variables for event flags to make it easier for
+escaped C code to call event flag functions (seq_ef*).</p>
+</div>
+</div>
+<div class="section" id="external-api">
+<h3>External API<a class="headerlink" href="#external-api" title="Permalink to this headline">¶</a></h3>
+<p>I finally got around to separating the public API (to be called from
+e.g. embedded C code) from the internal interface between the compiler
+generated code and the run-time system. The latter parts have been moved
+from seqCom.h to the new header file seq_snc.h.</p>
+<p>In particular, the following changes have been made:</p>
+<div class="section" id="retained">
+<h4>Retained<a class="headerlink" href="#retained" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>includes of pvAlarm.h and seq_release.h</p></li>
+<li><p>enum compType and its members DEFAULT, ASYNC, SYNC</p></li>
+<li><p>constants NOEVFLAG and DEFAULT_QUEUE_SIZE</p></li>
+<li><p>typedefs string, SS_ID, seqBool, seqProgram</p></li>
+<li><p>all functions except seqRegisterSequencerProgram and seqRegisterSequencerCommands
+but including seq_pvIndex (which is actually a macro)</p></li>
+</ul>
+</div>
+<div class="section" id="added">
+<h4>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>new built-in functions:</p>
+<ul>
+<li><p>seq_pvGetCancel</p></li>
+<li><p>seq_pvPutCancel</p></li>
+<li><p>seq_pvAssignSubst</p></li>
+</ul>
+</li>
+<li><p>the constant DEFAULT_TIMEOUT (see <a class="reference internal" href="#new-delay-implementation">New Delay Implementation</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="renamed">
+<h4>Renamed<a class="headerlink" href="#renamed" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>EV_ID -&gt; EF_ID</p></li>
+<li><p>VAR_ID -&gt; CH_ID</p></li>
+</ul>
+</div>
+<div class="section" id="compatibility-aliases">
+<h4>Compatibility Aliases<a class="headerlink" href="#compatibility-aliases" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>typedef SEQ_VARS USER_VAR
+#define ssId                  seqg_ss
+#define pVar                  seqg_var
+#define USER_VAR              SEQ_VARS
+#define UserVar               seqg_vars
+#define VAR_ID                CH_ID
+#define EV_ID                 EF_ID
+#define seq_pvFreeQ           seq_pvFlushQ
+#define DEFAULT_QUEUE_SIZE    100
+</pre></div>
+</div>
+<p>These names should not be used in new code.</p>
+</div>
+<div class="section" id="removed">
+<h4>Removed<a class="headerlink" href="#removed" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>DELAY_ID (obsolete, see <a class="reference internal" href="#new-delay-implementation">New Delay Implementation</a>)</p></li>
+<li><p>OPT_MAIN (-m is a compile time option)</p></li>
+<li><p>optTest (is now internal to seq library)</p></li>
+</ul>
+</div>
+<div class="section" id="moved-to-seq-snc-h">
+<h4>Moved to seq_snc.h<a class="headerlink" href="#moved-to-seq-snc-h" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>struct definitions for the static part of the generated program:</p>
+<ul class="simple">
+<li><p>struct seqChan</p></li>
+<li><p>struct seqState</p></li>
+<li><p>struct seqSS</p></li>
+<li><p>struct seqProgram</p></li>
+<li><p>typedef PROG_ID</p></li>
+</ul>
+</li>
+<li><p>option constants:</p>
+<ul class="simple">
+<li><p>OPT_DEBUG</p></li>
+<li><p>OPT_ASYNC</p></li>
+<li><p>OPT_CONN</p></li>
+<li><p>OPT_REENT</p></li>
+<li><p>OPT_NEWEF</p></li>
+<li><p>OPT_SAFE</p></li>
+<li><p>OPT_NORESETTIMERS</p></li>
+<li><p>OPT_DOENTRYFROMSELF</p></li>
+<li><p>OPT_DOEXITTOSELF</p></li>
+</ul>
+<p>User code never needs to use these. It can use seq_optGet instead.</p>
+</li>
+<li><p>bitmask operations:</p>
+<ul class="simple">
+<li><p>NBITS</p></li>
+<li><p>NWORDS</p></li>
+<li><p>bitSet, bitClear, bitTest</p></li>
+</ul>
+<p>Like option values, these were never meant to be part of a public API.</p>
+</li>
+<li><p>the constants TRUE and FALSE</p></li>
+<li><p>typedefs for generated functions; note that these have been renamed, too</p></li>
+<li><p>the functions seqRegisterSequencerProgram and seqRegisterSequencerCommands</p></li>
+</ul>
+</div>
+<div class="section" id="other-changes">
+<h4>Other Changes<a class="headerlink" href="#other-changes" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>epicsShareAPI markers have been removed except for shell commands</p></li>
+</ul>
+</div>
+<div class="section" id="remarks">
+<h4>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h4>
+<p>My justification for making these potentially breaking changes is that this
+is how it should have been done from the start. The things I have removed
+were never meant to be part of a public API. In the unlikely event that
+there are existing programs with a legitimate need to access these
+internals, they can always include seq_snc.h.</p>
+</div>
+</div>
+<div class="section" id="build-system">
+<h3>Build System<a class="headerlink" href="#build-system" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="top-level-makefile">
+<h4>Top-level Makefile<a class="headerlink" href="#top-level-makefile" title="Permalink to this headline">¶</a></h4>
+<p>The extra rules in the top level Makefile to produce documentation with
+or without generating a pdf file have been changed: ‘pdf’ and ‘docs’ are
+no longer make variables. Instead there are a number of new targets you
+can specify:</p>
+<ul class="simple">
+<li><p>html: build the docs in html format</p></li>
+<li><p>docs: additionally build the manual in pdf format</p></li>
+<li><p>upload etc: these are for my own benefit only, ignore them</p></li>
+</ul>
+<p>See <a class="reference internal" href="Installation.html#building-the-manual"><span class="std std-ref">Building the Manual</span></a> for details.</p>
+</div>
+<div class="section" id="generate-st-d-files">
+<h4>Generate st.d Files<a class="headerlink" href="#generate-st-d-files" title="Permalink to this headline">¶</a></h4>
+<p>The extra build rules for the sequencer have been extended to generate
+dependencies for .st files, using the mkmf.pl tool from base. Note that .st
+files are passed through the C preprocessor and therefore may include C
+header files or in fact SNL code from another file.</p>
+</div>
+</div>
+<div class="section" id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Place program lock around wake-up commands in CA callback.</p>
+<p>This prevents a race condition resulting in a crash when the program
+shuts down and deletes mutexes etc before the callback has issued its
+final ss_wakeup call.</p>
+</li>
+<li><p>Fixed connect and monitor accounting in seq_disconnect and seq_camonitor.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Release Notes for Version 2.2</a><ul>
+<li><a class="reference internal" href="#release-2-2-9">Release 2.2.9</a></li>
+<li><a class="reference internal" href="#release-2-2-8">Release 2.2.8</a></li>
+<li><a class="reference internal" href="#release-2-2-7">Release 2.2.7</a></li>
+<li><a class="reference internal" href="#release-2-2-6">Release 2.2.6</a></li>
+<li><a class="reference internal" href="#release-2-2-5">Release 2.2.5</a></li>
+<li><a class="reference internal" href="#release-2-2-4">Release 2.2.4</a></li>
+<li><a class="reference internal" href="#release-2-2-3">Release 2.2.3</a></li>
+<li><a class="reference internal" href="#release-2-2-2">Release 2.2.2</a></li>
+<li><a class="reference internal" href="#release-2-2-1">Release 2.2.1</a><ul>
+<li><a class="reference internal" href="#supported-epics-base-versions">Supported EPICS Base Versions</a></li>
+<li><a class="reference internal" href="#new-language-features">New Language Features</a><ul>
+<li><a class="reference internal" href="#foreign-types">Foreign Types</a></li>
+<li><a class="reference internal" href="#other-foreign-entities">Other Foreign Entities</a></li>
+<li><a class="reference internal" href="#function-definitions">Function Definitions</a></li>
+<li><a class="reference internal" href="#type-definitions">Type Definitions</a></li>
+<li><a class="reference internal" href="#new-option-for-extra-warnings">New Option for Extra Warnings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deprecated-and-removed-features">Deprecated and Removed Features</a><ul>
+<li><a class="reference internal" href="#deprecated-foreign-declarations">Deprecated Foreign Declarations</a></li>
+<li><a class="reference internal" href="#deprecated-state-local-assign-etc">Deprecated State Local <code class="docutils literal notranslate"><span class="pre">assign</span></code> etc</a></li>
+<li><a class="reference internal" href="#removed-keyword-connect">Removed Keyword “connect”</a></li>
+<li><a class="reference internal" href="#removed-pv-library">Removed PV Library</a></li>
+<li><a class="reference internal" href="#removed-devsequencer">Removed devSequencer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#built-in-constants">Built-in Constants</a></li>
+<li><a class="reference internal" href="#built-in-functions">Built-in Functions</a><ul>
+<li><a class="reference internal" href="#reported-severity-of-failures">Reported Severity of Failures</a></li>
+<li><a class="reference internal" href="#pvmessage">pvMessage</a></li>
+<li><a class="reference internal" href="#new-delay-implementation">New Delay Implementation</a></li>
+<li><a class="reference internal" href="#pvassignsubst">pvAssignSubst</a></li>
+<li><a class="reference internal" href="#pv-functions-and-multiply-assigned-arrays">PV Functions and Multiply Assigned Arrays</a></li>
+<li><a class="reference internal" href="#timeout-arguments-for-pvget-and-pvput">Timeout Arguments for pvGet and pvPut</a></li>
+<li><a class="reference internal" href="#new-built-in-functions-pvgetcancel-and-pvputcancel">New Built-in Functions pvGetCancel and pvPutCancel</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generated-c-code">Generated C Code</a><ul>
+<li><a class="reference internal" href="#order-of-definitions">Order of Definitions</a></li>
+<li><a class="reference internal" href="#names-of-generated-entities">Names of Generated Entities</a></li>
+<li><a class="reference internal" href="#event-flags">Event Flags</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#external-api">External API</a><ul>
+<li><a class="reference internal" href="#retained">Retained</a></li>
+<li><a class="reference internal" href="#added">Added</a></li>
+<li><a class="reference internal" href="#renamed">Renamed</a></li>
+<li><a class="reference internal" href="#compatibility-aliases">Compatibility Aliases</a></li>
+<li><a class="reference internal" href="#removed">Removed</a></li>
+<li><a class="reference internal" href="#moved-to-seq-snc-h">Moved to seq_snc.h</a></li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a></li>
+<li><a class="reference internal" href="#remarks">Remarks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#build-system">Build System</a><ul>
+<li><a class="reference internal" href="#top-level-makefile">Top-level Makefile</a></li>
+<li><a class="reference internal" href="#generate-st-d-files">Generate st.d Files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Examples.html"
+                        title="previous chapter">Examples of SNL Programs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="KnownProblems.html"
+                        title="next chapter">Known Problems</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

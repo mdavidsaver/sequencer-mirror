@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Known Problems &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Plans for the Future" href="Plans.html" />
+    <link rel="prev" title="Release Notes for Version 2.2" href="ReleaseNotes-2-2.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Plans.html" title="Plans for the Future"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="ReleaseNotes-2-2.html" title="Release Notes for Version 2.2"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Known Problems</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="known-problems">
+<h1>Known Problems<a class="headerlink" href="#known-problems" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="known-problems-in-release-2-2-7">
+<span id="known-problems-2-2-7"></span><h2>Known Problems in Release 2.2.7<a class="headerlink" href="#known-problems-in-release-2-2-7" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>building the examples fails on MacOS due to recent build fixes for Windows =:|</p>
+<p>The repo has a patch to fix that.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="known-problems-in-release-2-2-6">
+<span id="known-problems-2-2-6"></span><h2>Known Problems in Release 2.2.6<a class="headerlink" href="#known-problems-in-release-2-2-6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>pvGet fails if the array size declared in SNL is greater than the native
+array size of the PV, whereas monitoring with that setup works.</p></li>
+<li><p>The examples/demo doesn’t work with base &gt;+ 3.15 due to a missing entry in
+the dbd file.</p></li>
+</ul>
+</div>
+<div class="section" id="known-problems-in-release-2-2-5">
+<span id="known-problems-2-2-5"></span><h2>Known Problems in Release 2.2.5<a class="headerlink" href="#known-problems-in-release-2-2-5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>While building against base 7.x succeeds there are lots of deprecation
+warnings and most of the tests are not run due to an incomplete definition
+of the EPICS_HAS_UNIT_TEST make variable.</p></li>
+</ul>
+</div>
+<div class="section" id="known-problems-in-release-2-2-4">
+<span id="known-problems-2-2-4"></span><h2>Known Problems in Release 2.2.4<a class="headerlink" href="#known-problems-in-release-2-2-4" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Building fails with Visual Studio 2010 due to a C99-ism (mixed
+declarations and code) that was introduced when upgrading the lemon parser
+template.</p></li>
+<li><p>Parallel building can fail when using gcc to generate dependency information.
+The solution is to use the EPICS tool mkmf.pl instead by placing a line</p>
+<blockquote>
+<div><p>HDEPENDS_METHOD = MKMF</p>
+</div></blockquote>
+<p>in the config section of src/snc/Makefile.</p>
+</li>
+<li><p>On Windows, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code> fails inside the documentation directory. The
+fix is to replace <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-rf</span></code> with <code class="docutils literal notranslate"><span class="pre">$(RMDIR)</span></code> in documentation/Makefile.</p></li>
+</ul>
+</div>
+<div class="section" id="known-problems-in-release-2-2-3">
+<span id="known-problems-2-2-3"></span><h2>Known Problems in Release 2.2.3<a class="headerlink" href="#known-problems-in-release-2-2-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Certain versions of Windows don’t like relative paths with forward slashes
+for commands whose result gets redirected to a file. This leads to errors
+when building against base-3.15 which has deprecated the <code class="docutils literal notranslate"><span class="pre">PATH_FILTER</span></code>
+function (which converts forward to backward slashes). The solution is to
+define <code class="docutils literal notranslate"><span class="pre">LEMON=$(abspath</span> <span class="pre">$(INSTALL_HOST_BIN)/lemon$(HOSTEXE))</span></code> in
+<code class="docutils literal notranslate"><span class="pre">src/snc/Makefile</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="known-problems-in-release-2-2-2">
+<span id="known-problems-2-2-2"></span><h2>Known Problems in Release 2.2.2<a class="headerlink" href="#known-problems-in-release-2-2-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Attempting to issue a DEFAULT pvPut when an ASYNC put is already
+pending on the same variable leads to an assertion failure.</p></li>
+</ul>
+</div>
+<div class="section" id="known-problems-in-release-2-2-1">
+<span id="known-problems-2-2-1"></span><h2>Known Problems in Release 2.2.1<a class="headerlink" href="#known-problems-in-release-2-2-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>In test/validate, pvAssignStress.st has the same program name as
+pvAssignSubst.st, leading to build errors when cross-compiling to VxWorks
+or RTEMS, where all tests get linked into a single library. This can be
+fixed by changing the program name in pvAssignStress.st to
+“pvAssignStressTest”.</p></li>
+<li><p>A previous bugfix in the pvAssign builtin introduced a regression, that
+can lead to assertion failures.</p></li>
+<li><p>A wrong assertion in the CA event handler may be triggered when connection
+to a PV is lost in the middle of a pending get request.</p></li>
+<li><p>When exiting from a program, deadlock is possible when a pending callback
+is active when the program shuts down.</p></li>
+<li><p>Tests fail in tests/compiler if the build host has an ancient version of
+Test::More that does not support subtest. This happens e.g. on RHEL 6.6.</p></li>
+<li><p>Dependency generation in src/snc is broken if compiled against base-3.15
+due to a bug in the Makefile (and one in base).</p></li>
+<li><p>Building static libraries fails due to wrong order of dependent libraries
+in two Makefiles.</p></li>
+<li><p>Building on Windows can fail due to missing epicsShare stuff in seq_snc.h.</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Known Problems</a><ul>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-7">Known Problems in Release 2.2.7</a></li>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-6">Known Problems in Release 2.2.6</a></li>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-5">Known Problems in Release 2.2.5</a></li>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-4">Known Problems in Release 2.2.4</a></li>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-3">Known Problems in Release 2.2.3</a></li>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-2">Known Problems in Release 2.2.2</a></li>
+<li><a class="reference internal" href="#known-problems-in-release-2-2-1">Known Problems in Release 2.2.1</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ReleaseNotes-2-2.html"
+                        title="previous chapter">Release Notes for Version 2.2</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Plans.html"
+                        title="next chapter">Plans for the Future</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

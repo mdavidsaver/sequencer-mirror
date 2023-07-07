@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users’ Guide &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="Introduction.html" />
+    <link rel="prev" title="State Notation Language and Sequencer" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Introduction.html" title="Introduction"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="index.html" title="State Notation Language and Sequencer"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+        <li class="nav-item nav-item-this"><a href="">Users’ Guide</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="users-guide">
+<h1>Users’ Guide<a class="headerlink" href="#users-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Introduction.html#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Introduction.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Introduction.html#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Introduction.html#copying-and-distribution">Copying and Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Introduction.html#note-on-versions">Note on Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Download and Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#download">Download</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#unpack">Unpack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#configure-and-build">Configure and Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#use">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#report-bugs">Report Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#contribute">Contribute</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#a-first-example">A First Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#variables">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#built-in-pv-functions">Built-in PV Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#a-complete-program">A Complete Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#adding-a-second-state-set">Adding a Second State Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#variable-initialization-and-entry-blocks">Variable Initialization and Entry Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#pv-names-using-program-parameters">PV Names Using Program Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#data-types">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#arrays-of-variables">Arrays of Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#dynamic-assignment">Dynamic Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#status-of-process-variables">Status of Process Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#synchronizing-state-sets-with-event-flags">Synchronizing State Sets with Event Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#queuing-monitors">Queuing Monitors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#asynchronous-use-of-pvget">Asynchronous Use of pvGet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#asynchronous-use-of-pvput">Asynchronous Use of pvPut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#connection-management">Connection Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#multiple-instances-and-reentrant-object-code">Multiple Instances and Reentrant Object Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#process-variable-element-count">Process Variable Element Count</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#what-s-happening-at-run-time">What’s Happening at Run Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#safe-mode">Safe Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tutorial.html#common-pitfalls-and-misconceptions">Common Pitfalls and Misconceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Compiling.html">Compiling SNL Programs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Compiling.html#the-snl-to-c-compiler">The SNL to C Compiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Compiling.html#c-pre-processor">C Pre-processor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Compiling.html#complete-build">Complete Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Compiling.html#building-a-stand-alone-program">Building a Stand-alone Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Compiling.html#using-makebaseapp">Using makeBaseApp</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Using.html">Running SNL Programs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Using.html#command-syntax">Command Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Using.html#starting-a-program">Starting a Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Using.html#program-parameters">Program Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Using.html#examining-a-program">Examining a Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Using.html#shell-command-reference">Shell Command Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="EscapeToC.html">Escape to C Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="EscapeToC.html#preprocessor-directives">Preprocessor Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EscapeToC.html#defining-c-functions-within-the-program">Defining C Functions within the Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EscapeToC.html#calling-pv-functions-from-c">Calling PV Functions from C</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EscapeToC.html#variable-modification-for-reentrant-option">Variable Modification for Reentrant Option</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Reference.html">SNL Reference for Version 2.2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#lexical-syntax">Lexical Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#program">Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#state-set">State Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#statements-and-expressions">Statements and Expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#built-in-constants">Built-in Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#built-in-functions">Built-in Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#safe-mode">Safe Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Reference.html#foreign-variables-and-functions">Foreign Variables and Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples of SNL Programs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Examples.html#entry-and-exit-action-example">Entry and exit action example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Examples.html#dynamic-assignment-example">Dynamic assignment example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Examples.html#complex-example">Complex example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ReleaseNotes-2-2.html">Release Notes for Version 2.2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-9">Release 2.2.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-8">Release 2.2.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-7">Release 2.2.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-6">Release 2.2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-5">Release 2.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-4">Release 2.2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-3">Release 2.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-2">Release 2.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReleaseNotes-2-2.html#release-2-2-1">Release 2.2.1</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="KnownProblems.html">Known Problems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-7">Known Problems in Release 2.2.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-6">Known Problems in Release 2.2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-5">Known Problems in Release 2.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-4">Known Problems in Release 2.2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-3">Known Problems in Release 2.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-2">Known Problems in Release 2.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KnownProblems.html#known-problems-in-release-2-2-1">Known Problems in Release 2.2.1</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Plans.html">Plans for the Future</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Glossary.html">Glossary of Terms</a></li>
+</ul>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+</ul>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Main Topics</h3>
+<ul class="topless">
+<li><a href="Installation.html">Download</a></li>
+<li><a href="Tutorial.html">Tutorial</a></li>
+<li><a href="Reference.html">Language Reference</a></li>
+<li>Manual (<a href="#">html</a>,
+    <a href="Manual.pdf">pdf</a>)</li>
+</ul>
+<h3>Other Versions</h3>
+<ul class="topless">
+<li><a href="../sequencer-2-1/index.html">Version 2.1</a></li>
+</ul>
+<h3>Related</h3>
+<ul class="topless">
+<li><a href="http://www.aps.anl.gov/epics/">EPICS</a></li>
+<li><a href="http://www.aps.anl.gov/epics/base/R3-14/12-docs/CAref.html">Channel Access</a></li>
+</ul><h3><a href="#">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Users’ Guide</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">State Notation Language and Sequencer</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Introduction.html"
+                        title="next chapter">Introduction</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

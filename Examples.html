@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Examples of SNL Programs &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release Notes for Version 2.2" href="ReleaseNotes-2-2.html" />
+    <link rel="prev" title="SNL Reference for Version 2.2" href="Reference.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="ReleaseNotes-2-2.html" title="Release Notes for Version 2.2"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Reference.html" title="SNL Reference for Version 2.2"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Examples of SNL Programs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="examples-of-snl-programs">
+<h1>Examples of SNL Programs<a class="headerlink" href="#examples-of-snl-programs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="entry-and-exit-action-example">
+<h2>Entry and exit action example<a class="headerlink" href="#entry-and-exit-action-example" title="Permalink to this headline">¶</a></h2>
+<p>The following program illustrates entry and exit actions.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program snctest
+float v;
+assign v to &quot;grw:xxxExample&quot;; monitor v;
+
+ss ss1 {
+  state low {
+    entry {
+      printf(&quot;Will do this on entry&quot;);
+      printf(&quot;Another thing to do on entry&quot;);
+    }
+    when (v&gt;5.0) {
+      printf(&quot;now changing to high\n&quot;);
+    } state high
+    when (delay(.1)) { } state low
+    exit {
+      printf(&quot;Something to do on exit&quot;);
+    }
+  }
+
+  state high {
+    when (v&lt;=5.0) {
+      printf(&quot;changing to low\n&quot;);
+    } state low
+    when(delay(.1)) { } state high
+  }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="dynamic-assignment-example">
+<h2>Dynamic assignment example<a class="headerlink" href="#dynamic-assignment-example" title="Permalink to this headline">¶</a></h2>
+<p>The following segment of a program illustrates dynamic
+assignment of database variables to database channels. We have left
+out error checking for simplicity.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program dynamic
+option -c; /* don&#39;t wait for db connections */
+string sysName;
+assign sysName to &quot;&quot;;
+
+long setpoint[5];
+assign setpoint to {}; /* don&#39;t need all five strings */
+
+int i;
+char str[30];
+
+ss dyn {
+  state init {
+    when () {
+      sprintf (str, &quot;MySys:%s&quot;, &quot;name&quot;);
+      pvAssign (sysName, str);
+      for (i = 0; i &lt; 5; i++) {
+        sprintf (str, &quot;MySys:SP%d\n&quot;, i);
+        pvAssign (setpoint[i], str);
+        pvMonitor (setpoint[i]);
+      }
+    } state process
+  }
+
+  state process {
+    ...
+  }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="complex-example">
+<h2>Complex example<a class="headerlink" href="#complex-example" title="Permalink to this headline">¶</a></h2>
+<p>The following program contains most of the concepts presented
+in the previous sections. It consists of four state sets: (1)
+<code class="docutils literal notranslate"><span class="pre">level_det</span></code> , (2) <code class="docutils literal notranslate"><span class="pre">generate_voltage</span></code> , (3) <code class="docutils literal notranslate"><span class="pre">test_status</span></code> , and
+(4) <code class="docutils literal notranslate"><span class="pre">periodic_read</span></code> . The state set <code class="docutils literal notranslate"><span class="pre">level_det</span></code> is similar to the
+example in <a class="reference internal" href="Tutorial.html#a-complete-program"><span class="std std-ref">A Complete Program</span></a> from the <a class="reference internal" href="Tutorial.html"><span class="doc">Tutorial</span></a>.
+It generates a triangle waveform in one state set and detects the
+level in another. Other state sets detect and print alarm status
+and demonstrate asynchronous <code class="docutils literal notranslate"><span class="pre">pvGet</span></code> and <code class="docutils literal notranslate"><span class="pre">pvPut</span></code> operation. The
+program demonstrates several other concepts, including access to
+run-time parameters with macro substitution and <code class="docutils literal notranslate"><span class="pre">macValueGet</span></code> , use
+of arrays, escaped C code, and VxWorks input-output.</p>
+<div class="section" id="preamble">
+<h3>Preamble<a class="headerlink" href="#preamble" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program example (&quot;unit=ajk, stack=11000&quot;)
+
+/*=================== declarations =========================*/
+float ao1;
+assign ao1 to &quot;{unit}:ao1&quot;;
+monitor ao1;
+
+float ao2;
+assign ao2 to &quot;{unit}:ao1&quot;;
+
+float wf1[2000];
+assign wf1 to &quot;{unit}:wf1.FVAL&quot;;
+
+short bi1;
+assign bi1 to &quot;{unit}:bi1&quot;;
+
+float delta;
+short prev_status;
+short ch_status;
+
+evflag ef1;
+evflag ef2;
+
+option +r;
+
+int fd; /* file descriptor for logging */
+char *pmac; /* used to access program macros */
+</pre></div>
+</div>
+</div>
+<div class="section" id="level-det-state-set">
+<h3>level_det state set<a class="headerlink" href="#level-det-state-set" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/*=================== State Sets ===========================*/
+
+/* State set level_det detects level &gt; 5v &amp; &lt; 3v */
+ss level_det {
+
+  state start {
+    when() {
+      fd = -1;
+      /* Use parameter to define logging file */
+      pmac = macValueGet(&quot;output&quot;);
+      if (pmac == 0 || pmac[0] == 0) {
+        printf(&quot;No macro defined for \&quot;output\&quot;\n&quot;);
+        fd = 1;
+      }
+      else {
+        fd = open(pmac, (O_CREAT | O_WRONLY), 0664);
+        if (fd == ERROR) {
+          printf(&quot;Can&#39;t open %s\n&quot;, pmac);
+          exit (-1);
+        }
+      }
+      fdprintf(fd, &quot;Starting program\n&quot;);
+    } state init
+  }
+
+  state init {
+    /* Initialize */
+    when (pvConnectCount() == pvChannelCount() ) {
+      fdprintf(fd, &quot;All channels connectedly&quot;);
+      bi1 = FALSE;
+      ao2 = -1.0;
+      pvPut(bi1);
+      pvPut(ao2);
+      efClear(ef2);
+      efSet(ef1);
+    } state low
+
+    when (delay(5.0)) {
+      fdprintf(fd, &quot;...waiting\n&quot;);
+    } state init
+  }
+
+  state low {
+    when (ao1 &gt; 5.0) {
+      fdprintf(fd, &quot;High\n&quot;);
+      bi1 = TRUE;
+      pvPut(bi1);
+    } state high
+
+    when (pvConnectCount() &lt; pvChannelCount() ) {
+      fdprintf(fd, &quot;Connection lost\n&quot;);
+      efClear(ef1);
+      efSet(ef2);
+    } state init
+  }
+
+  state high {
+    when (ao1 &lt; 3.0) {
+      fdprintf(fd, &quot;Low\n&quot;);
+      bi1 = FALSE;
+      pvPut(bi1);
+    } state low
+
+    when (pvConnectCount() &lt; pvChannelCount() ) {
+      efSet(ef2);
+    } state init
+  }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="generate-voltage-state-set">
+<h3>generate_voltage state set<a class="headerlink" href="#generate-voltage-state-set" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/* Generate a ramp up/down */
+ss generate_voltage {
+  state init {
+    when (efTestAndClear(ef1)) {
+      printf(&quot;start ramp\n&quot;);
+      fdprintf(fd, &quot;start ramp\n&quot;);
+      delta = 0.2;
+    } state ramp
+  }
+
+  state ramp {
+    when (delay(0.1)) {
+      if ( (delta &gt; 0.0 &amp;&amp; ao2 &gt;= 11.0) ||
+        (delta &lt; 0.0 &amp;&amp; ao2 &lt;= -11.0) ) {
+        delta = -delta;
+      }
+      ao2 += delta;
+      pvPut(ao2);
+    } state ramp
+
+    when (efTestAndClear(ef2)) {
+    } state init
+  }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="test-status-state-set">
+<h3>test_status state set<a class="headerlink" href="#test-status-state-set" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/* Check for channel status; print exceptions */
+ss test_status {
+  state init {
+    when (efTestAndClear(ef1)) {
+      printf(&quot;start test_status\n&quot;);
+      fdprintf(fd, &quot;start test_status\n&quot;);
+      prev_status = pvStatus(ao1);
+    } state status_check
+  }
+
+  state status_check {
+    when ((ch_status = pvStatus(ao1)) != prev_status) {
+      print_status(fd, ao1, ch_status, pvSeverity(ao1));
+      prev_status = ch_status;
+    } state status_check
+  }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="periodic-read-state-set">
+<h3>periodic_read state set<a class="headerlink" href="#periodic-read-state-set" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/* Periodically write/read a waveform channel. This uses
+   pvGetComplete() to allow asynchronous pvGet().
+*/
+ss periodic_read {
+  state init {
+    when (efTestAndClear(ef1)) {
+      wf1[0] = 2.5;
+      wf1[1] = -2.5;
+      pvPut(wf1);
+    } state read_chan
+  }
+
+  state read_chan {
+    when (delay(5.)) {
+      wf1[0] += 2.5;
+      wf1[1] += -2.5;
+      pvPut(wf1);
+      pvGet(wf1);
+    } state wait_read
+  }
+
+  state wait_read {
+    when (pvGetComplete(wf1)) {
+      fdprintf(fd, &quot;periodic read: &quot;);
+      print_status(fd, wf1[0], pvStatus(wf1), pvSeverity(wf1));
+    } state read_chan
+  }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="exit-procedure">
+<h3>exit procedure<a class="headerlink" href="#exit-procedure" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/* Exit procedure - close the log file */
+exit {
+  printf(&quot;close fd=%d\n&quot;, fd);
+  if ((fd &gt; 0) &amp;&amp; (fd != ioGlobalStdGet(1)) )
+    close(fd);
+  fd = -1;
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="c-functions">
+<h3>C functions<a class="headerlink" href="#c-functions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/*==================== End of state sets =====================*/
+
+%{
+  /* This C function prints out the status, severity,
+  and value for a channel. Note: fd is passed as a
+  parameter to allow reentrant code to be generated */
+  print_status(int fd, float value, int status, int severity)
+  {
+    char *pstr;
+
+    switch (status)
+    {
+      case NO_ALARM:    pstr = &quot;no alarm&quot;;        break;
+      case HIHI_ALARM:  pstr = &quot;high-high alarm&quot;; break;
+      case HIGH_ALARM:  pstr = &quot;high alarm&quot;;      break;
+      case LOLO_ALARM:  pstr = &quot;low-low alarm&quot;;   break;
+      case LOW_ALARM:   pstr = &quot;low alarm&quot;;       break;
+      case STATE_ALARM: pstr = &quot;state alarm&quot;;     break;
+      case COS_ALARM:   pstr = &quot;cos alarm&quot;;       break;
+      case READ_ALARM:  pstr = &quot;read alarm&quot;;      break;
+      case WRITE_ALARM: pstr = &quot;write alarm&quot;;     break;
+      default:          pstr = &quot;other alarm&quot;;     break;
+    }
+    fprintf (fd, &quot;Alarm condition: \&quot;%s\&quot;&quot;, pstr);
+    if (severity == MINOR_ALARM)
+      pstr = &quot;minor&quot;;
+    else if (severity == MAJOR_ALARM)
+      pstr = &quot;major&quot;;
+    else
+      pstr = &quot;none&quot;;
+    fdprintf (fd, &quot;, severity: \&quot;%s\&quot;, value=%g\n&quot;, pstr, value);
+  }
+}%
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Examples of SNL Programs</a><ul>
+<li><a class="reference internal" href="#entry-and-exit-action-example">Entry and exit action example</a></li>
+<li><a class="reference internal" href="#dynamic-assignment-example">Dynamic assignment example</a></li>
+<li><a class="reference internal" href="#complex-example">Complex example</a><ul>
+<li><a class="reference internal" href="#preamble">Preamble</a></li>
+<li><a class="reference internal" href="#level-det-state-set">level_det state set</a></li>
+<li><a class="reference internal" href="#generate-voltage-state-set">generate_voltage state set</a></li>
+<li><a class="reference internal" href="#test-status-state-set">test_status state set</a></li>
+<li><a class="reference internal" href="#periodic-read-state-set">periodic_read state set</a></li>
+<li><a class="reference internal" href="#exit-procedure">exit procedure</a></li>
+<li><a class="reference internal" href="#c-functions">C functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Reference.html"
+                        title="previous chapter">SNL Reference for Version 2.2</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ReleaseNotes-2-2.html"
+                        title="next chapter">Release Notes for Version 2.2</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

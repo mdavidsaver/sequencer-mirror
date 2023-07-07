@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta content="programming language, control system, epics, sequencer, snl, snc, control system, domain specific language, state machine, state notation language, channel access" name="keywords" />
+<meta content="EPICS State Notation Language and Sequencer" name="title" />
+
+    <title>State Notation Language and Sequencer &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Users’ Guide" href="Manual.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Manual.html" title="Users’ Guide"
+             accesskey="N">next</a></li>
+    <span style="font-size:150%; font-weight:bold" ><a href="#">EPICS Sequencer Version 2.2</a></span>
+        <li class="nav-item nav-item-this"><a href="">State Notation Language and Sequencer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="state-notation-language-and-sequencer">
+<h1>State Notation Language and Sequencer<a class="headerlink" href="#state-notation-language-and-sequencer" title="Permalink to this headline">¶</a></h1>
+<img alt="_images/epics-logo.png" class="align-right" src="_images/epics-logo.png" />
+<dl class="field-list simple">
+<dt class="field-odd">Maintainer</dt>
+<dd class="field-odd"><p>Ben Franksen &lt;<a class="reference external" href="mailto:benjamin&#46;franksen&#37;&#52;&#48;helmholtz-berlin&#46;de">benjamin<span>&#46;</span>franksen<span>&#64;</span>helmholtz-berlin<span>&#46;</span>de</a>&gt;</p>
+</dd>
+<dt class="field-even">Co-Maintainer</dt>
+<dd class="field-even"><p>Freddie Akeroyd &lt;<a class="reference external" href="mailto:freddie&#46;akeroyd&#37;&#52;&#48;stfc&#46;ac&#46;uk">freddie<span>&#46;</span>akeroyd<span>&#64;</span>stfc<span>&#46;</span>ac<span>&#46;</span>uk</a>&gt;</p>
+</dd>
+<dt class="field-odd">Bug Reports</dt>
+<dd class="field-odd"><p><a class="reference external" href="mailto:tech-talk&#37;&#52;&#48;aps&#46;anl&#46;gov">tech-talk<span>&#64;</span>aps<span>&#46;</span>anl<span>&#46;</span>gov</a></p>
+</dd>
+<dt class="field-even">Version</dt>
+<dd class="field-even"><p>2.2</p>
+</dd>
+</dl>
+<p>This page is a mirror of <a class="reference external" href="https://www-csr.bessy.de/control/SoftDist/sequencer/">https://www-csr.bessy.de/control/SoftDist/sequencer/</a>
+while the BESSY site is offline.</p>
+<p>Welcome to the home page of the <strong>EPICS Sequencer</strong> project.</p>
+<p>This project is a component of the <em>Experimental Physics and Industrial
+Control System</em> (<a class="reference external" href="http://www.aps.anl.gov/epics/">EPICS</a>), a set of tools, libraries and applications
+developed collaboratively and used worldwide to create distributed soft
+real-time control systems for large scale scientific instruments.</p>
+<p>The <em>State Notation Language</em> (SNL), is a <a class="reference external" href="http://en.wikipedia.org/wiki/Domain-specific_programming_language">domain specific programming
+language</a> that smoothly integrates with and depends and builds on EPICS
+<a class="reference external" href="http://www.aps.anl.gov/epics/base/index.php">base</a>. This project defines SNL and provides an implementation, consisting
+of the SNL compiler and runtime system.</p>
+<p>The Sequencer is <a class="reference external" href="http://www.gnu.org/philosophy/free-sw.html">free software</a>, licensed under the <a class="reference external" href="http://www.aps.anl.gov/epics/license/open.php">EPICS Open License</a>.</p>
+<p>For further information</p>
+<ul class="simple">
+<li><p>take a look at the <a class="reference internal" href="Introduction.html#overview"><span class="std std-ref">Overview</span></a> to get a first impression of the
+Sequencer’s features.</p></li>
+<li><p>This <a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/talks/epics-meeting-2011-PSI/sequencer-2-1-slides.pdf">talk about version 2.1 of the Sequencer</a> contains a short
+introduction to SNL, including a walk through a simple example program to
+illustrate the basic concepts.</p></li>
+<li><p>A (slightly out-dated) <a class="reference internal" href="Tutorial.html"><span class="doc">Tutorial</span></a> is also available,</p></li>
+<li><p>as well as a detailed <a class="reference internal" href="Reference.html"><span class="doc">SNL Reference for Version 2.2</span></a>,</p></li>
+<li><p>and instructions for download and <a class="reference internal" href="Installation.html"><span class="doc">Download and Installation</span></a>.</p></li>
+<li><p>All of these are part of the <a class="reference internal" href="Manual.html"><span class="doc">Users’ Guide</span></a>.</p></li>
+</ul>
+<p>This page describes version 2.2 and the documentation, in particular the
+language reference, has been updated to reflect the <a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-1"><span class="std std-ref">changes between 2.1 and
+2.2</span></a>. For older versions, please refer to <a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer-2-1/index.html">the old version of this page</a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Main Topics</h3>
+<ul class="topless">
+<li><a href="Installation.html">Download</a></li>
+<li><a href="Tutorial.html">Tutorial</a></li>
+<li><a href="Reference.html">Language Reference</a></li>
+<li>Manual (<a href="Manual.html">html</a>,
+    <a href="Manual.pdf">pdf</a>)</li>
+</ul>
+<h3>Other Versions</h3>
+<ul class="topless">
+<li><a href="../sequencer-2-1/index.html">Version 2.1</a></li>
+</ul>
+<h3>Related</h3>
+<ul class="topless">
+<li><a href="http://www.aps.anl.gov/epics/">EPICS</a></li>
+<li><a href="http://www.aps.anl.gov/epics/base/R3-14/12-docs/CAref.html">Channel Access</a></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+        &copy; Copyright 
+2000, William Lupton, W. M. Keck Observatory, Kamuela, HI 96743, USA;
+2010-2013, Benjamin Franksen, Helmholtz-Zentrum Berlin für Materialien und Energie GmbH
+.
+      Last updated on Jul 07, 2023.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>

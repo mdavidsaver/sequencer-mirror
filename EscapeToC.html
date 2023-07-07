@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escape to C Code &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SNL Reference for Version 2.2" href="Reference.html" />
+    <link rel="prev" title="Running SNL Programs" href="Using.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Reference.html" title="SNL Reference for Version 2.2"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Using.html" title="Running SNL Programs"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Escape to C Code</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="escape-to-c-code">
+<span id="id1"></span><h1>Escape to C Code<a class="headerlink" href="#escape-to-c-code" title="Permalink to this headline">¶</a></h1>
+<p>Because the SNL does not support the full C language, C code may be
+escaped in the program. The escaped code is not compiled by
+<a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a>, instead it is literally copied to the generated C code.
+There are two escape methods:</p>
+<ol class="arabic">
+<li><p>Any code between <code class="docutils literal notranslate"><span class="pre">%%</span></code> and the next newline character is escaped.
+Example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>%% for (i=0; i &lt; NVAL; i++)
+</pre></div>
+</div>
+</li>
+<li><p>Any code between <code class="docutils literal notranslate"><span class="pre">%{</span></code> and <code class="docutils literal notranslate"><span class="pre">}%</span></code> is escaped. Example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>%{
+extern float smooth();
+extern LOGICAL accelerator_mode;
+}%
+</pre></div>
+</div>
+<p>Note that text appearing on the same line after <code class="docutils literal notranslate"><span class="pre">%{</span></code> and
+before <code class="docutils literal notranslate"><span class="pre">}%</span></code> also belongs to the literal code block.</p>
+</li>
+</ol>
+<p>A variable or preprocessor macro declared in escaped C code is
+foreign to the SNL, just as if it were declared in C code extern to
+the SNL program and its use will give a warning if no foreign
+declaration preceeds it.</p>
+<div class="section" id="preprocessor-directives">
+<span id="id3"></span><h2>Preprocessor Directives<a class="headerlink" href="#preprocessor-directives" title="Permalink to this headline">¶</a></h2>
+<p>A very common pitfall is the use of preprocessor directives, such as
+<code class="docutils literal notranslate"><span class="pre">#include</span></code>,  in multi-line literal C code blocks in conjunction
+with using the preprocessor on the unprocessed SNL code (which
+happens by the default with the standard build rules if the name of
+the source file has the <code class="docutils literal notranslate"><span class="pre">.st</span></code> extension).</p>
+<p>For instance with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>%{
+#include &lt;abcLib.h&gt;
+/* ... */
+}%
+</pre></div>
+</div>
+<p>the header file will be included <em>before</em> the SNL compiler parses
+the program, which is most probably not what you wanted to happen
+here. For instance,
+if the header contains macro definitions, these will not be in effect
+when the rest of the C code block gets compiled.</p>
+<p>You can defer interpretation of a preprocessor directive until after
+<a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> has compiled the code to C, by ensuring that some extra
+non-blank characters appear in front of the <code class="docutils literal notranslate"><span class="pre">#</span></code> sign, so
+<a class="reference internal" href="Glossary.html#term-cpp"><code class="xref any std std-term docutils literal notranslate"><span class="pre">cpp</span></code></a> does not recognize the directive. For instance</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>%%#include &lt;abcLib.h&gt;
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>%{#include &lt;abcLib.h&gt;}%
+</pre></div>
+</div>
+</div>
+<div class="section" id="defining-c-functions-within-the-program">
+<h2>Defining C Functions within the Program<a class="headerlink" href="#defining-c-functions-within-the-program" title="Permalink to this headline">¶</a></h2>
+<p>Escaped C code can appear in many places in the SNL program. But only
+code that appears at the top level, i.e. outside any SNL code block will
+be placed at the C top level. So, C <em>function definitions</em> must be
+placed there; this means either inside the definitions section
+(<a class="reference internal" href="Reference.html#grammar-token--4"><code class="xref any std std-token docutils literal notranslate"><span class="pre">initial_defns</span></code></a>) or at the end of the program. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program example
+...
+/* last SNL statement */
+%{
+    static float smooth (pArray, numElem)
+    { ... }
+}%
+</pre></div>
+</div>
+<p>It matters where the function is defined: if it appears at the end of
+the program, it can see all the variable and type definitions generated
+by the SNL compiler, so if your C function accesses a global SNL variable,
+you must place its definition at the end. However, this means that the
+generated code for the SNL program does not see the C function definition,
+so you might want to place a separate prototype for the function in the
+definitions section (i.e. before the state sets).</p>
+<p>Remember that you can <em>call</em> any C function from anywhere in the SNL program
+without escaping. You can also link the SNL program to C objects or
+libraries, so the only reason to put C function definitions inside the
+SNL program is if your function accesses global SNL variables.</p>
+</div>
+<div class="section" id="calling-pv-functions-from-c">
+<span id="id4"></span><h2>Calling PV Functions from C<a class="headerlink" href="#calling-pv-functions-from-c" title="Permalink to this headline">¶</a></h2>
+<p>The built-in SNL functions such as <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> cannot be directly
+used in user-supplied functions. However, most of the built-in
+functions have a C language equivalent with the same name, except
+that the prefix <code class="docutils literal notranslate"><span class="pre">seq_</span></code> is added (e.g. <code class="docutils literal notranslate"><span class="pre">pvGet</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">seq_pvGet</span></code>). These C functions expect an additional first argument
+identifying the calling state set, which is available in action code
+under the name <code class="docutils literal notranslate"><span class="pre">ssId</span></code>. If a process variable name is required, the
+index of that variable must be supplied. This index is obtained via
+the <a class="reference internal" href="Reference.html#c.pvIndex" title="pvIndex"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvIndex</span></code></a> function (which must be called from SNL code,
+not C code, to work).</p>
+<p>If the program is compiled with the <a class="reference internal" href="Compiling.html#cmdoption-arg-r"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+r</span></code></a> option, user
+functions cannot directly access SNL variables, not even global ones.
+Instead, variables (or their address) should be passed to user
+functions as arguments. Alternatively, you can pass the <code class="docutils literal notranslate"><span class="pre">pVar</span></code>
+variable of type <code class="docutils literal notranslate"><span class="pre">USER_VAR*</span></code> and access SNL variables as structure
+members of <code class="docutils literal notranslate"><span class="pre">pVar</span></code>. See next section for details and an example.</p>
+<p>The prototypes for the C functions corresponding to the built-in SNL
+functions as well as additional supporting macros and type
+definitions can be found in the header file <code class="docutils literal notranslate"><span class="pre">seqCom.h</span></code>. This header
+file is always included by the generated C code.</p>
+</div>
+<div class="section" id="variable-modification-for-reentrant-option">
+<span id="reentrant-option"></span><h2>Variable Modification for Reentrant Option<a class="headerlink" href="#variable-modification-for-reentrant-option" title="Permalink to this headline">¶</a></h2>
+<p>If the reentrant option (<a class="reference internal" href="Compiling.html#cmdoption-arg-r"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+r</span></code></a>) is specified to <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a>
+then all variables are made part of a structure. Suppose we have the
+following top-level declarations in the SNL program:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int sw1;
+float v5;
+short wf2[1024];
+</pre></div>
+</div>
+<p>The C file will contain the following declaration:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>struct UserVar {
+    int sw1;
+    float v5;
+    short wf2[1024];
+};
+</pre></div>
+</div>
+<p>The sequencer allocates the structure area at run time and passes a
+pointer to this structure into the program. This structure
+has the following type:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>struct UserVar *pVar;
+</pre></div>
+</div>
+<p>Reference to variable <code class="docutils literal notranslate"><span class="pre">sw1</span></code> is made as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pVar-&gt;sw1
+</pre></div>
+</div>
+<p>This conversion is automatically performed by <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> for all SNL
+statements, but you will have to handle escaped C code yourself.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="Reference.html#safe-mode"><span class="std std-ref">Safe Mode</span></a> (enabled with the <a class="reference internal" href="Compiling.html#cmdoption-arg-s"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+s</span></code></a> option) implies
+reentrant mode. In safe mode, each state set has its own copy of the
+<code class="docutils literal notranslate"><span class="pre">UserVar</span></code> struct. You can operate on its members in any way you like,
+including taking the address of variables and passing them to C
+functions.</p>
+</div>
+<p>Here is a stupid example of a C function that does a pvGet, increments the
+variable, and then does a pvPut:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>program userfunc
+
+option +r;
+
+%{
+static void incr(SS_ID ssId, int *pv, VAR_ID v)
+{
+    seq_pvGet(ssId, v, SYNC);
+    *pv += 1;
+    seq_pvPut(ssId, v, SYNC);
+}
+}%
+
+int i;
+assign i to &quot;counter&quot;;
+
+foreign ssId;
+
+ss myss {
+    state doit {
+        when (delay(1)) {
+            incr(ssId, &amp;i, pvIndex(i));
+        } state doit
+    }
+}
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Escape to C Code</a><ul>
+<li><a class="reference internal" href="#preprocessor-directives">Preprocessor Directives</a></li>
+<li><a class="reference internal" href="#defining-c-functions-within-the-program">Defining C Functions within the Program</a></li>
+<li><a class="reference internal" href="#calling-pv-functions-from-c">Calling PV Functions from C</a></li>
+<li><a class="reference internal" href="#variable-modification-for-reentrant-option">Variable Modification for Reentrant Option</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Using.html"
+                        title="previous chapter">Running SNL Programs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Reference.html"
+                        title="next chapter">SNL Reference for Version 2.2</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

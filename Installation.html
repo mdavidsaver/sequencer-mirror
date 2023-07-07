@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download and Installation &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial" href="Tutorial.html" />
+    <link rel="prev" title="Introduction" href="Introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Tutorial.html" title="Tutorial"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Download and Installation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="download-and-installation">
+<h1>Download and Installation<a class="headerlink" href="#download-and-installation" title="Permalink to this headline">¶</a></h1>
+<p>This chapter gives instructions on how to download, build, and install the
+sequencer, as well as how to run the tests, build the manual, report bugs,
+and contribute patches.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="epics-base">
+<h3>EPICS base<a class="headerlink" href="#epics-base" title="Permalink to this headline">¶</a></h3>
+<p>You need to have <a class="reference external" href="http://www.aps.anl.gov/epics/base/">EPICS base</a> and its dependencies (<a class="reference external" href="http://www.gnu.org/software/make/">GNU make</a>, <a class="reference external" href="http://www.perl.org/">Perl</a>)
+installed. Any version of EPICS base starting with 3.14.12.2 and up to 3.15
+should do. Starting with seq-<a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.6.tar.gz">2.2.6</a>, EPICS base versions up to 7.0.1 can be
+used.</p>
+</div>
+<div class="section" id="re2c">
+<h3>re2c<a class="headerlink" href="#re2c" title="Permalink to this headline">¶</a></h3>
+<p>Building the sequencer also requires the lexer generator tool <a class="reference external" href="http://re2c.org/">re2c</a>. The
+minimum version required is 0.9.9, but I recommend using the latest version
+that is avaliable for your system. If you are building on a Linux system,
+you can use the re2c package your distribution provides.</p>
+<p>On Windows things are not quite as smooth. The <a class="reference external" href="http://sourceforge.net/projects/re2c/files/old/">old re2c download</a> page on
+sourceforge contains pre-built binaries for Windows systems, albeit only up
+to version 0.13.5. If this doesn’t work for you, there is <a class="reference external" href="https://github.com/FreddieAkeroyd/EPICS-re2c">EPICS-re2c</a>, a
+version of re2c that has been wrapped as an EPICS module. There is also a
+Windows build of <a class="reference external" href="https://ci.appveyor.com/project/FreddieAkeroyd/re2c/build/artifacts">re2c-1.0.3 on Appveyor</a>.</p>
+<p>In any case, if the re2c executable is not installed in a directory listed
+in your PATH environment variable, you should change the definition of RE2C
+in configure/CONFIG_SITE to the full path name of the re2c executable before
+building the sequencer, see <a class="reference internal" href="#configure-and-build"><span class="std std-ref">Configure and Build</span></a> below.</p>
+</div>
+</div>
+<div class="section" id="download">
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<p>Releases are available here:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/">http://www-csr.bessy.de/control/SoftDist/sequencer/releases/</a></p>
+</div></blockquote>
+<p>The current stable release is <a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.9.tar.gz">2.2.9</a>. Please take a look at the
+<a class="reference internal" href="Introduction.html#versioningpolicy"><span class="std std-ref">Versioning Policy</span></a> if you are unsure whether to upgrade to
+a new release.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The documentation and download links you will find on this page are for
+version 2.2. The <a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer-2-1/index.html">documentation for version 2.1</a> is still there and will
+be maintained at least until version 2.3 is released.</p>
+</div>
+<p>Development snapshots are available under the name</p>
+<blockquote>
+<div><p>seq-&lt;version&gt;-snapshot-&lt;date&gt;.tar.gz</p>
+</div></blockquote>
+<p>where &lt;version&gt; is the branch name without the ‘branch-‘ prefix.</p>
+<p>In the releases directory there is always a symbolic link to the
+<a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2-2-snapshot-latest.tar.gz">latest snapshot</a>.</p>
+<p>Here are all releases for version 2.2:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 38%" />
+<col style="width: 46%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Release Notes</p></th>
+<th class="head"><p>Known Problems</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.9.tar.gz">2.2.9</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-9"><span class="std std-ref">Release 2.2.9</span></a></p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.8.tar.gz">2.2.8</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-8"><span class="std std-ref">Release 2.2.8</span></a></p></td>
+<td><p>n/a</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.7.tar.gz">2.2.7</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-7"><span class="std std-ref">Release 2.2.7</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-7"><span class="std std-ref">Known Problems in Release 2.2.7</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.6.tar.gz">2.2.6</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-6"><span class="std std-ref">Release 2.2.6</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-6"><span class="std std-ref">Known Problems in Release 2.2.6</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.5.tar.gz">2.2.5</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-5"><span class="std std-ref">Release 2.2.5</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-5"><span class="std std-ref">Known Problems in Release 2.2.5</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.4.tar.gz">2.2.4</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-4"><span class="std std-ref">Release 2.2.4</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-4"><span class="std std-ref">Known Problems in Release 2.2.4</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.3.tar.gz">2.2.3</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-3"><span class="std std-ref">Release 2.2.3</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-3"><span class="std std-ref">Known Problems in Release 2.2.3</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.2.tar.gz">2.2.2</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-2"><span class="std std-ref">Release 2.2.2</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-2"><span class="std std-ref">Known Problems in Release 2.2.2</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2.2.1.tar.gz">2.2.1</a></p></td>
+<td><p><a class="reference internal" href="ReleaseNotes-2-2.html#release-notes-2-2-1"><span class="std std-ref">Release 2.2.1</span></a></p></td>
+<td><p><a class="reference internal" href="KnownProblems.html#known-problems-2-2-1"><span class="std std-ref">Known Problems in Release 2.2.1</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>If you want to help testing, please use the <a class="reference external" href="http://www-csr.bessy.de/control/SoftDist/sequencer/releases/seq-2-2-snapshot-latest.tar.gz">latest snapshot</a>, or check out
+the <a class="reference external" href="http://darcs.net/">darcs</a> repository for <a class="reference external" href="http://www-csr.bessy.de/cgi-bin/darcsweb.cgi?r=seq%20branch-2-2;a=summary">branch-2-2</a>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>darcs get http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-2
+</pre></div>
+</div>
+<p>Since release 2.2.2 there is also a git mirror, so you can as well</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone http://www-csr.bessy.de/control/SoftDist/sequencer/repo/branch-2-2.git
+</pre></div>
+</div>
+<p>but please note that this is just a mirror, no more: I cannot accept git
+patches (or whatever they are called in git); it may also happen that I have
+to re-create the whole git repo from scratch (because incremental conversion
+sometimes fails).</p>
+<p>Development of new features now happens on <a class="reference external" href="http://www-csr.bessy.de/cgi-bin/darcsweb.cgi?r=seq%20branch-2-3;a=summary">branch-2-3</a>.</p>
+<p>See <a class="reference internal" href="#contribute">Contribute</a> for a short description how to record and send patches.</p>
+<p>You can also follow development by using the <a class="reference external" href="http://www-csr.bessy.de/cgi-bin/darcsweb.cgi">repository browser</a>.</p>
+</div>
+<div class="section" id="unpack">
+<h2>Unpack<a class="headerlink" href="#unpack" title="Permalink to this headline">¶</a></h2>
+<p>Change to the directory that you wish to be the parent of the sequencer
+source tree. Then unpack and untar the file. For example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gunzip seq-x.y.z.tar.gz
+tar xf seq-x.y.z.tar
+</pre></div>
+</div>
+<p>or, if you have <a class="reference external" href="http://www.gnu.org/software/tar/">GNU tar</a>, simply:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tar zxf seq-x.y.z.tar.gz
+</pre></div>
+</div>
+<p>You can now:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd seq-x.y.z
+</pre></div>
+</div>
+<p>and look at the source tree. The actual source code for the sequencer
+is under <code class="docutils literal notranslate"><span class="pre">src</span></code>. The documentation sources are under <code class="docutils literal notranslate"><span class="pre">documentation</span></code> and
+consist of plain readable text files (actually, the format is
+<a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> but you need to know about that only if you plan to
+make changes to the docs).</p>
+<p>In what follows, <code class="docutils literal notranslate"><span class="pre">$SEQ</span></code> refers to the directory where you are now,
+i.e. <code class="docutils literal notranslate"><span class="pre">.../seq-x.y.z/</span></code>.</p>
+</div>
+<div class="section" id="configure-and-build">
+<span id="id12"></span><h2>Configure and Build<a class="headerlink" href="#configure-and-build" title="Permalink to this headline">¶</a></h2>
+<p>The sequencer uses the EPICS build system. This means there is no
+automatic configuration, instead you have to edit the file
+<code class="docutils literal notranslate"><span class="pre">configure/RELEASE</span></code> and perhaps also <code class="docutils literal notranslate"><span class="pre">configure/CONFIG_SITE</span></code>.
+These are make include files, so the syntax is that of (GNU) make.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">configure/RELEASE</span></code>, change the definition of the variable
+<code class="docutils literal notranslate"><span class="pre">EPICS_BASE</span></code> to the path where your EPICS base is installed.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">configure/CONFIG_SITE</span></code>, you can specify the target architectures
+for which to build via the <code class="docutils literal notranslate"><span class="pre">CROSS_COMPILER_TARGET_ARCHS</span></code> variable (a
+subset of those for which EPICS has been built, default is all). You
+can also configure where the re2c tool is
+installed (the default configuration assumes that it can be found in
+your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>).</p>
+<p>Your environment should be configured for building EPICS applications.
+This means that <code class="docutils literal notranslate"><span class="pre">EPICS_HOST_ARCH</span></code> and (possibly) <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>
+should be correctly defined. See the <a class="reference external" href="http://www.aps.anl.gov/epics/base/R3-14/11-docs/AppDevGuide.pdf">EPICS Application Developer’s Guide</a>
+for details.</p>
+<p>After changing the files in <code class="docutils literal notranslate"><span class="pre">configure</span></code>, run GNU make.</p>
+<p>Note that make builds first in the <code class="docutils literal notranslate"><span class="pre">configure</span></code> directory, then the
+<code class="docutils literal notranslate"><span class="pre">src</span></code> tree, and finally the <code class="docutils literal notranslate"><span class="pre">test</span></code> and <code class="docutils literal notranslate"><span class="pre">examples</span></code> trees. A failure
+in the latter two
+will not impact your ability to write SNL programs (but is still a bug and
+should be reported, see <a class="reference internal" href="#report-bugs">Report Bugs</a>).</p>
+<div class="section" id="building-the-manual">
+<span id="id13"></span><h3>Building the Manual<a class="headerlink" href="#building-the-manual" title="Permalink to this headline">¶</a></h3>
+<p>From 2.0.99 on, the manual is in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> format. This
+format is (more or less) readable plain text, so this section is optional.</p>
+<p>Building the manual means generating a set of html pages and maybe a
+single pdf from the sources.</p>
+<p>The html pages are generated by issuing:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make html
+</pre></div>
+</div>
+<p>This will generate the home page and install it into the directory
+<code class="docutils literal notranslate"><span class="pre">$SEQ/html</span></code>. This step requires that you have <a class="reference external" href="http://www.python.org/">Python</a> and <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a>
+installed on your system.</p>
+<p>If, in addition, you want a printable version (pdf), do:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make docs
+</pre></div>
+</div>
+<p>This generates a pdf file named <code class="docutils literal notranslate"><span class="pre">Manual.pdf</span></code> and also puts it into the
+<code class="docutils literal notranslate"><span class="pre">html</span></code> subdirectory. Note that pdf generation is done via latex, so
+you need to have a working latex installation. On my system (kubuntu
+karmic at the time of writing this) I also needed to install the package
+tetex-extra.</p>
+</div>
+</div>
+<div class="section" id="test">
+<span id="verifyingtheinstallation"></span><h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<p>You can run the automated test suite by issuing</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make -s runtests
+</pre></div>
+</div>
+<p>(the -s option is to suppress irrelevant output generated by make).</p>
+<p>To run just one test from the suite, switch to the build directory of
+the test that corresonds to your <code class="docutils literal notranslate"><span class="pre">EPICS_HOST_ARCH</span></code> and execute perl
+with the name of the test
+program ending in <code class="docutils literal notranslate"><span class="pre">.t</span></code>.  For example, to run the evflag test on a
+linux-x86_64 host, change directory to
+<code class="docutils literal notranslate"><span class="pre">test/validate/O.linux-x86_64</span></code> and run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>perl evflag.t
+</pre></div>
+</div>
+<p>There are two ways to run a test that has an associated database
+(evflag is such a test).  The above will run the state machine and
+database on the same IOC.  To run the test as two separate IOCs, use
+the test program ending in <code class="docutils literal notranslate"><span class="pre">Ioc.t</span></code> (e.g. evflagIoc.t).  The IOC
+running the state machine runs in the foreground, and the one running
+the database runs in the background.</p>
+<p>The test suite can also be run on an embedded system. Currently only vxWorks
+systems are supported. To do this, point the vxWorks startup script to</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$SEQ/test/validate/O.$T_A/st.cmd
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">$T_A</span></code> is the name of the target architecture and <code class="docutils literal notranslate"><span class="pre">$SEQ</span></code> refers to
+the (absolute) path of your sequencer installation. The system will
+start an IOC and will run a number of SNL test programs, one after the other,
+after each one giving a summary of how many tests failed etc.</p>
+<p>To check out an example, change directory to examples/demo and run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>./O.linux-x86_64/demo demo.stcmd
+</pre></div>
+</div>
+<p>The output should look something like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ben@sarun[1]: .../examples/demo &gt; ./O.linux-x86_64/demo demo.stcmd
+dbLoadDatabase &quot;../../dbd/demo.dbd&quot;
+demo_registerRecordDeviceDriver(pdbbase)
+dbLoadRecords &quot;demo.db&quot;
+iocInit
+Starting iocInit
+############################################################################
+###  EPICS IOC CORE built on Mar  3 2010
+###  EPICS R3.14.8.2 $R3-14-8-2$ $2006/01/06 15:55:13$
+############################################################################
+iocInit: All initialization complete
+seq &amp;demo &quot;debug=0&quot;
+SEQ Version 2.1.0, compiled Fri Jul 15 12:44:09 2011
+Spawning sequencer program &quot;demo&quot;, thread 0x8064f48: &quot;demo&quot;
+start -&gt; ramp_up
+epics&gt; light_off -&gt; light_on
+ramp_up -&gt; ramp_down
+light_on -&gt; light_off
+ramp_down -&gt; ramp_up
+light_off -&gt; light_on
+ramp_up -&gt; ramp_down
+...
+</pre></div>
+</div>
+<p>If you see the “start -&gt; ramp_up” etc. messages, things are good.</p>
+</div>
+<div class="section" id="use">
+<h2>Use<a class="headerlink" href="#use" title="Permalink to this headline">¶</a></h2>
+<p>This is a short description how to use the sequencer in an EPICS
+application. For more general usage information, see the section on
+<a class="reference internal" href="Compiling.html"><span class="doc">Compiling SNL Programs</span></a> and <a class="reference internal" href="Using.html"><span class="doc">Running SNL Programs</span></a>.</p>
+<p>To use the sequencer in an EPICS application, change the definition of
+<code class="docutils literal notranslate"><span class="pre">SNCSEQ</span></code> in <code class="docutils literal notranslate"><span class="pre">configure/RELEASE</span></code> (that is, the one in your
+application, not the sequencer’s) to contain the path to your
+sequencer installation.</p>
+<p>As soon as <code class="docutils literal notranslate"><span class="pre">SNCSEQ</span></code> is defined, the EPICS build system automagically
+includes the build rules defined in the sequencer. To add an SNL
+program to your application, write something like</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SRCS += xyz.st
+abc_LIBS += seq pv
+</pre></div>
+</div>
+<p>into your Makefile. Here, <code class="docutils literal notranslate"><span class="pre">xyz.st</span></code> is the name of your SNL program, and
+<code class="docutils literal notranslate"><span class="pre">abc</span></code> is the name of the library or binary to produce. Note that <code class="docutils literal notranslate"><span class="pre">.st</span></code>
+files are run through the C preprocessor (<a class="reference internal" href="Glossary.html#term-cpp"><code class="xref any std std-term docutils literal notranslate"><span class="pre">cpp</span></code></a>) before giving them to
+the SNL compiler. Use the extension <code class="docutils literal notranslate"><span class="pre">.stt</span></code> to avoid this. For details,
+see Chapter 4 of the <a class="reference external" href="http://www.aps.anl.gov/epics/base/R3-14/11-docs/AppDevGuide.pdf">EPICS Application Developer’s Guide</a>.</p>
+<p>A complete example application that also uses the sequencer can be
+produced using makeBaseApp, e.g.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>makeBaseApp.pl -t example ex
+</pre></div>
+</div>
+<p>Take a look at <code class="docutils literal notranslate"><span class="pre">exApp/src</span></code>, especially the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.</p>
+</div>
+<div class="section" id="report-bugs">
+<h2>Report Bugs<a class="headerlink" href="#report-bugs" title="Permalink to this headline">¶</a></h2>
+<p>Please send bug reports to to <a class="reference external" href="mailto:tech-talk&#37;&#52;&#48;aps&#46;anl&#46;gov">tech-talk<span>&#64;</span>aps<span>&#46;</span>anl<span>&#46;</span>gov</a> or the maintainer
+(currently this is <a class="reference external" href="mailto:benjamin&#46;franksen&#37;&#52;&#48;helmholtz-berlin&#46;de">me</a>). It helps
+if you include which release of the sequencer and EPICS base release
+you are using.</p>
+</div>
+<div class="section" id="contribute">
+<h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>
+<p>I am always happy to receive patches (bug fixes, improvements, whatever).
+For minor changes you don’t need to bother with <a class="reference external" href="http://darcs.net/">darcs</a>, just send me a
+<a class="reference external" href="http://en.wikipedia.org/wiki/Patch_%28Unix%29">patch file</a>.</p>
+<p>For more involved changes you might want to send a <a class="reference external" href="http://darcs.net/">darcs</a> patch. You can
+create a local copy of the <a class="reference external" href="http://darcs.net/">darcs</a> repository (the stable branch in this
+example) by saying:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>darcs get http://www-csr.bessy.de/control/SoftDist/sequencer/repo/stable
+</pre></div>
+</div>
+<p>Assuming you have made some changes, first update your repository to
+include the latest changes from upstream (with darcs this is not
+strictly necessary, but good practice as it helps to avoid unnecessary
+conflicts):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>darcs pull
+</pre></div>
+</div>
+<p>(darcs will ask you for each patch that is not yet in your repo). Then
+record your changes (if you haven’t already):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>darcs record
+</pre></div>
+</div>
+<p>(darcs will prompt you for every single change you made and then prompt
+you for giving the patch a name). Finally say:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>darcs send
+</pre></div>
+</div>
+<p>A word of caution: it may happen that I <a class="reference external" href="http://darcs.net/manual/bigpage.html#SECTION00694000000000000000">darcs obliterate</a> patches in
+the experimental branch. If <a class="reference external" href="http://darcs.net/manual/bigpage.html#SECTION00664000000000000000">darcs send</a> asks whether to include patches
+that you don’t have authored, this is probably what happened. In that case
+can (but you need not necessarily) quit and obliterate them in your source
+tree, too, before trying to <a class="reference external" href="http://darcs.net/manual/bigpage.html#SECTION00664000000000000000">darcs send</a> again.</p>
+<p>Please respect the coding style when making changes. This includes
+indentation (tabs or spaces, how many) and all the other little things
+on which programmers like to differ ;-) like placement of braces etc.
+Note that for historical reasons the style differs somewhat between
+files and subdirectories. It is much easier for me to review patches if
+they do not contain gratuitous changes or combine several unrelated
+changes in a single patch.</p>
+<p>Also, please take care that your patch does not accidentally contain
+site-specific changes (typically done in configure). For my own work, I
+usually record such changes with a description that contains ‘DONT SEND
+THIS’ or something similar, so I don’t accidentally record them together
+with other changes.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Download and Installation</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li><a class="reference internal" href="#epics-base">EPICS base</a></li>
+<li><a class="reference internal" href="#re2c">re2c</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#download">Download</a></li>
+<li><a class="reference internal" href="#unpack">Unpack</a></li>
+<li><a class="reference internal" href="#configure-and-build">Configure and Build</a><ul>
+<li><a class="reference internal" href="#building-the-manual">Building the Manual</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#test">Test</a></li>
+<li><a class="reference internal" href="#use">Use</a></li>
+<li><a class="reference internal" href="#report-bugs">Report Bugs</a></li>
+<li><a class="reference internal" href="#contribute">Contribute</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Introduction.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Tutorial.html"
+                        title="next chapter">Tutorial</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

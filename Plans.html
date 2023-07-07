@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plans for the Future &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Glossary of Terms" href="Glossary.html" />
+    <link rel="prev" title="Known Problems" href="KnownProblems.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Glossary.html" title="Glossary of Terms"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="KnownProblems.html" title="Known Problems"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Plans for the Future</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plans-for-the-future">
+<h1>Plans for the Future<a class="headerlink" href="#plans-for-the-future" title="Permalink to this headline">¶</a></h1>
+<p>This is just a simple bullet list of things that are on my (long term) TODO
+list. Comments are welcome, as usual.</p>
+<ul>
+<li><p>Check whether it makes sense to let users specify the communication
+(request) type. This is currently baked-in to be inferred from the
+variable’s type as specified in the program text.
+Another twist would be to allow to use the native type and convert
+on the seq side. The question is if this
+brings any actual benefit, considering that sequencer and database
+typically run on the same IOC. It might be convenient, sometimes.</p></li>
+<li><p>Add “pv” as a prefix type constructor. This is now implemented in my
+working branch for version 2.3. Sketch:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int pv x = 0;                         /* single anonymous scalar pv */
+int pv x = pv &quot;name&quot;;                 /* single named scalar pv */
+int (pv x)[2] = {1,2};                /* single anonymous array valued pv */
+int (pv x)[2] = pv &quot;name&quot;;            /* single named array valued pv */
+int pv x[2];                          /* array of 2 anonymous scalar pvs */
+int pv x[2] = pv {&quot;n1&quot;, &quot;n2&quot;};        /* array of 2 named scalar pvs */
+int (pv x[2])[100];                   /* array of 2 anonymous array valued pvs */
+int (pv x[2])[100] = pv {&quot;n1&quot;, &quot;n2&quot;}; /* array of 2 named array valued pvs */
+</pre></div>
+</div>
+<p>This now also works for structs whose members can be of pv type etc.</p>
+</li>
+<li><p>Raw ideas:</p>
+<ul>
+<li><p>Allow parameterized state sets (like a function). Then allow to “jump”
+from one state set to another one. The “caller” i.e. the original state
+set must wait for the “callee” to finish. The idea here is to avoid
+dynamic creation of threads, as this could be implemented as a simple
+procedure call. Needs more thought.</p></li>
+<li><p>Better support for enumerations i.e. PVs with native request type DBR_ENUM.
+The idea is that the programmer can use identifiers to name the choices,
+but does not have to know in advance which integer value corresponds
+to which choice.</p>
+<p>Maybe something very simple suffices, like a built-in function</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int pvChoice(var, char *choice_name);
+</pre></div>
+</div>
+<p>This requires support for DBR_GR_ENUM in the pv layer.</p>
+</li>
+<li><p>Better syntax for assign, monitor, sync, etc. The idea is to provide an
+alternative to the usual macros. Every SNL programmer uses her own
+self-made macros to simplify declaration blocks like</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int x;
+assign x to &quot;bla&quot;;
+monitor x;
+sync x to ef_x;
+</pre></div>
+</div>
+<p>The challenge here is to come up with something that is light-weight,
+can be easily specialized, and seamlessly fits into the existing syntax.</p>
+<p>My current favorite candidate is to extend the pv initialization syntax.
+The idea is that a pv init expression (i.e. an initializer prefixed with
+the “pv” keyword) can get extra arguments with defaults:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int pv x = pv &quot;name&quot;;             /* just assigned to &quot;name&quot; */
+int pv x = pv (&quot;name&quot;);           /* same */
+int pv x = pv (&quot;name&quot;, 1);        /* also monitor */
+int pv x = pv (&quot;name&quot;, 1, ef);    /* also sync to ef */
+int pv x = pv (&quot;name&quot;, 0, ef);    /* no monitor, but sync to ef */
+int pv x = pv (&quot;name&quot;, 1, 0, 20); /* monitor, no sync, queued (size 20) */
+int pv x[2] = pv ({&quot;n1&quot;, &quot;n2&quot;},1);/* both pvs are monitored */
+struct two {
+  int pv x;
+  int pv ys[2];
+};
+struct two s = pv {&quot;n1&quot;, {&quot;n2&quot;, &quot;n3&quot;}}; /* no monitors */
+struct two s = pv {(&quot;n1&quot;,1), ({&quot;n2&quot;, &quot;n3&quot;}, 1, ef)}; /* x monitored, ys also synced */
+etc...
+</pre></div>
+</div>
+<p>The “pv” outside of an aggregate “{ … }” should be the same as
+prefixing all elements with it. Aggregates in a pv argument position
+are allowed only for the pv name and mean expand all elements with the
+other arguments.</p>
+</li>
+</ul>
+</li>
+<li><p>Convert everything under test to use epicsUnitTest. Add more regression tests.</p></li>
+<li><p>Need to go over the introductory chapters in the docs, remove out-dated
+information. Partly done.</p></li>
+<li><p>Götz suggested to allow the monitor clause inside a state set, even if
+the variable is global. This would mean automatic variable updates affect
+only those state sets which contain the monitor clause, while others do
+not get updates. (Perhaps: combine this with state set local event flags
+and sync clauses.)</p>
+<p>This could be useful in situations where one state set writes to the variable
+and others only read. The writer would not monitor, thus would not fall
+victim to the modify but not publish fallacy.</p>
+<p>Experimental implementation in version 2.3 branch done. State local
+assign, monitor, etc got in the way, which is why I removed them in 2.3
+(deprecated in 2.2). They aren’t too useful anyway.</p>
+</li>
+<li><p>Add some sort of built-in macro language. Something that nicely integrates
+with the existing SNL syntax would be nice, e.g.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>define macro (arg, ...) {
+  definition
+}
+include &quot;headerfile&quot;;
+</pre></div>
+</div>
+<p>Use of CPP could then be deprecated. What about token catenation and
+stringification as in CPP?</p>
+<p>Implementation would have to be an intermediate step between lexing and parsing.</p>
+</li>
+</ul>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Plans for the Future</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="KnownProblems.html"
+                        title="previous chapter">Known Problems</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Glossary.html"
+                        title="next chapter">Glossary of Terms</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

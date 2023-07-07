@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compiling SNL Programs &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Running SNL Programs" href="Using.html" />
+    <link rel="prev" title="Tutorial" href="Tutorial.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Using.html" title="Running SNL Programs"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="Tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Compiling SNL Programs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="compiling-snl-programs">
+<h1>Compiling SNL Programs<a class="headerlink" href="#compiling-snl-programs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-snl-to-c-compiler">
+<h2>The SNL to C Compiler<a class="headerlink" href="#the-snl-to-c-compiler" title="Permalink to this headline">¶</a></h2>
+<p>The SNL to C compiler <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> compiles the state notation
+language into C code. The resulting file can then be compiled
+with a C compiler.</p>
+<div class="section" id="compiler-options">
+<span id="compileroptions"></span><h3>Compiler Options<a class="headerlink" href="#compiler-options" title="Permalink to this headline">¶</a></h3>
+<p>SNC options start by a plus or minus sign, followed by a single
+character. A plus sign turns the option on, and a minus turns the
+option off, unless the option takes an argument (currently only <a class="reference internal" href="#cmdoption-o"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-o</span></code></a>).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 82%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-a">
+<code class="sig-name descname">+a</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-a" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Asynchronous <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a>: the program continues without
+waiting for completion of the <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> operation.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-a">
+<code class="sig-name descname">-a</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-a" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Synchronous <a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a>: the program waits for completion.
+This is the default if an option is not specified.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-c">
+<code class="sig-name descname">+c</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-c" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Wait for process variables to connect before allowing the
+program to begin execution. This is the default.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-c">
+<code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-c" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Allow the program to begin execution before connections
+are established to all channel.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-d">
+<code class="sig-name descname">+d</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Turn on run-time debug messages.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-d">
+<code class="sig-name descname">-d</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Turn off run-time debug messages. This is the default.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-e">
+<code class="sig-name descname">+e</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-e" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Use the new event flag mode. This is the default.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-e">
+<code class="sig-name descname">-e</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-e" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Use the old event flag mode (clear flags after executing a
+when statement).</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-i">
+<code class="sig-name descname">+i</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-i" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Generate registrar procedure that registers shell commands
+and programs with an IOC shell. This is the default.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-i">
+<code class="sig-name descname">-i</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-i" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Do not generate registrar procedure.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-l">
+<code class="sig-name descname">+l</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-l" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Add line markers to the generated code, so that C compiler
+messages refer to the SNL source file. This is the default.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-l">
+<code class="sig-name descname">-l</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-l" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Do not produce line markers.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-m">
+<code class="sig-name descname">+m</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-m" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Include main procedure (seqMain.c) for a stand-alone program.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-m">
+<code class="sig-name descname">-m</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-m" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Do not include seqMain.c. This is the default.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-r">
+<code class="sig-name descname">+r</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-r" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Make the generated code reentrant, thus allowing more than one
+instance of the program to run on an IOC.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-r">
+<code class="sig-name descname">-r</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-r" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Generated code is not reentrant. This is the default.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-s">
+<code class="sig-name descname">+s</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p><a class="reference internal" href="Reference.html#safe-mode"><span class="std std-ref">Safe Mode</span></a>: variables are local to state set
+and must be communicated explicitly. Implies +r.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-s">
+<code class="sig-name descname">-s</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Traditional (non-safe) mode. This is the default for
+compatibility.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-w">
+<code class="sig-name descname">+w</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-w" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Display warning messages. This is the default.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-w">
+<code class="sig-name descname">-w</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-w" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Suppress warnings.</p></td>
+</tr>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-o">
+<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-o" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>To change the name of the generated C file. Requires an argument.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.2.</span></p>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 82%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><dl class="std option">
+<dt id="cmdoption-arg-W">
+<code class="sig-name descname">+W</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-W" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Display extra warnings for undefined objects.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="std option">
+<dt id="cmdoption-W">
+<code class="sig-name descname">-W</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-W" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td><p>Suppress extra warnings. This is the default.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Note that <a class="reference internal" href="#cmdoption-arg-a"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+a</span></code></a> and <a class="reference internal" href="#cmdoption-a"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-a</span></code></a> are ignored for calls to
+<a class="reference internal" href="Reference.html#c.pvGet" title="pvGet"><code class="xref any c c-func docutils literal notranslate"><span class="pre">pvGet</span></code></a> that explicitly specify <code class="docutils literal notranslate"><span class="pre">SYNC</span></code> or <code class="docutils literal notranslate"><span class="pre">ASYNC</span></code> in the
+2nd argument.</p>
+<p>Options may also be set from within the program (somewhere between the
+program name/parameter and the state set definitions), see
+<a class="reference internal" href="Reference.html#option-definition"><span class="std std-ref">Option</span></a> in the <a class="reference internal" href="Reference.html"><span class="doc">SNL Reference for Version 2.2</span></a>.</p>
+<p>Prior to Version 1.8 of the sequencer, event flags were cleared
+after a <code class="docutils literal notranslate"><span class="pre">when</span></code> statement executed. Currently, event flags must be
+cleared explicitly with either <a class="reference internal" href="Reference.html#c.efTestAndClear" title="efTestAndClear"><code class="xref any c c-func docutils literal notranslate"><span class="pre">efTestAndClear</span></code></a> or
+<a class="reference internal" href="Reference.html#c.efClear" title="efClear"><code class="xref any c c-func docutils literal notranslate"><span class="pre">efClear</span></code></a>. The <a class="reference internal" href="#cmdoption-e"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-e</span></code></a> compiler option can be used to
+restore the old behaviour.</p>
+</div>
+<div class="section" id="output-file">
+<h3>Output File<a class="headerlink" href="#output-file" title="Permalink to this headline">¶</a></h3>
+<p>The output file name is that of the input file with the extension
+replaced with <em>.c</em>. The <a class="reference internal" href="#cmdoption-o"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-o</span></code></a> option can be used to override the
+output file name.</p>
+<p>Actually the rules are a little more complex than stated above: <em>.st</em>
+and single-character extensions are replaced with <em>.c</em>; otherwise <em>.c</em>
+is appended to the full file name. In all cases, the <a class="reference internal" href="#cmdoption-o"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-o</span></code></a>
+compiler option overrides.</p>
+</div>
+<div class="section" id="errors">
+<h3>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h3>
+<p>If <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> detects an error, it displays a message describing the error
+and the location in the source file and aborts further compilation.
+Note, however, that <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> does <em>not</em> contain a type checker: all it
+knows (and cares) about C is the syntax. This means that many errors
+will only be found only during the C compilation phase. The C compiler
+will attributed these to the corresponding location in the SNL source
+file, since by default <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> generates line markers in the output that
+point back to the original source. This can be turned off with the
+<a class="reference internal" href="#cmdoption-l"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-l</span></code></a> (“ell”) compiler switch.</p>
+</div>
+<div class="section" id="warnings">
+<h3>Warnings<a class="headerlink" href="#warnings" title="Permalink to this headline">¶</a></h3>
+<p>In certain cases <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> cannot ultimately decide whether the code is
+erroneous. In such cases it will issue a warning message and continue.</p>
+<p>The most prominent example is the use of a variable or CPP macro that
+has not been declared in the SNL code, but could well be defined when
+compiling the generated C code (for example if the declaration has been
+in embedded C code, which <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> does not interpret at all). Warnings
+can be suppressed with the <a class="reference internal" href="#cmdoption-w"><code class="xref any std std-option docutils literal notranslate"><span class="pre">-w</span></code></a> compiler option.</p>
+<p>Note that since version 2.1 you can avoid these warnings by declaring
+such variables in SNL, see the <a class="reference internal" href="Reference.html#foreign-entities"><span class="std std-ref">Foreign Declarations</span></a> declaration.</p>
+</div>
+</div>
+<div class="section" id="c-pre-processor">
+<h2>C Pre-processor<a class="headerlink" href="#c-pre-processor" title="Permalink to this headline">¶</a></h2>
+<p>Depending on the application, it might be useful to pre-process the SNL
+source with a C pre-processor (<a class="reference internal" href="Glossary.html#term-cpp"><code class="xref any std std-term docutils literal notranslate"><span class="pre">cpp</span></code></a>). Using the C
+pre-processor allows you to include other SNL files, define macros, and
+perform conditional compilation. <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> supports this by
+interpreting <a class="reference internal" href="Glossary.html#term-cpp"><code class="xref any std std-term docutils literal notranslate"><span class="pre">cpp</span></code></a>-generated line markers, so that error and
+warning messages refer to the line numbers in the un-pre-processed SNL
+source.</p>
+<p>The build rules that the sequencer adds to the EPICS build system are such
+that files with the extension <code class="docutils literal notranslate"><span class="pre">.st</span></code> are preprocessed, while those with the
+extension <code class="docutils literal notranslate"><span class="pre">.stt</span></code> are not.</p>
+</div>
+<div class="section" id="complete-build">
+<h2>Complete Build<a class="headerlink" href="#complete-build" title="Permalink to this headline">¶</a></h2>
+<p>By default, the C code generated by <a class="reference internal" href="Glossary.html#term-snc"><code class="xref any std std-term docutils literal notranslate"><span class="pre">snc</span></code></a> from an SNL program is not a complete
+program, but merely a collection of procedures, data types, and
+variables. The generated procedures are supposed to be called by the
+sequencer library, which must be linked to the program. Furthermore,
+the generated code includes a number of header files, both from the
+sequencer and from EPICS base. Thus the compiler needs to have the
+EPICS base and sequencer include directories in its include path, and
+when linking it needs to link with sequencer and some EPICS base
+libraries.</p>
+<p>The simplest and most reliable way to build programs is by using the EPICS
+build system. All you need to do is:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Declare your <code class="docutils literal notranslate"><span class="pre">.st</span></code> or <code class="docutils literal notranslate"><span class="pre">.stt</span></code> files as sources for your program or
+IOC, by adding them to the <code class="docutils literal notranslate"><span class="pre">&lt;prod</span> <span class="pre">or</span> <span class="pre">lib&gt;_SRCS</span></code> variable, where
+<code class="docutils literal notranslate"><span class="pre">&lt;prod</span> <span class="pre">or</span> <span class="pre">lib&gt;</span></code> is either <code class="docutils literal notranslate"><span class="pre">PROD</span></code> or <code class="docutils literal notranslate"><span class="pre">LIB</span></code> or the concrete name of
+your product or library.</p></li>
+<li><p>Declare that you need to link against the <code class="docutils literal notranslate"><span class="pre">seq</span></code> and <code class="docutils literal notranslate"><span class="pre">pv</span></code> libraries
+by adding both to the <code class="docutils literal notranslate"><span class="pre">&lt;prod</span> <span class="pre">or</span> <span class="pre">lib&gt;_LIBS</span></code> variable.</p></li>
+</ol>
+</div></blockquote>
+<p>If none of this makes any sense to you then you probably need to study
+Chapter 4 “Build Facility” of the EPICS <a class="reference external" href="https://epics.anl.gov/base/R3-14/12-docs/AppDevGuide.pdf">Application Developer’s Guide</a>.</p>
+</div>
+<div class="section" id="building-a-stand-alone-program">
+<span id="id1"></span><h2>Building a Stand-alone Program<a class="headerlink" href="#building-a-stand-alone-program" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#cmdoption-arg-m"><code class="xref any std std-option docutils literal notranslate"><span class="pre">+m</span></code></a> compiler option can be used to create a stand-alone program,
+otherwise an IOC is needed to start sequencer programs. Since version 2.1
+the main procedure is no longer hard-coded. Instead, the code generator adds a
+define and an include statement</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#define PROG_NAME name_of_your_snl_program
+#include &quot;seqMain.c&quot;
+</pre></div>
+</div>
+<p>at the end of the generated C file, where <code class="docutils literal notranslate"><span class="pre">name_of_your_snl_program</span></code> is
+the name (identifier) whose address is to be passed to the <a class="reference internal" href="Using.html#c.seq" title="seq"><code class="xref any c c-func docutils literal notranslate"><span class="pre">seq</span></code></a> function.
+This means you can provide your own version of main simply by placing a file
+named <code class="docutils literal notranslate"><span class="pre">seqMain.c</span></code> in your source directory (the EPICS build system usually
+takes care that the source directory is at the front of the C compiler’s
+include path).</p>
+<p>A simple default <code class="docutils literal notranslate"><span class="pre">seqMain.c</span></code> is provided and installed into the
+sequencer’s <code class="docutils literal notranslate"><span class="pre">include</span></code> directory. Note that since version 2.1 the default
+main starts an IOC shell (<code class="docutils literal notranslate"><span class="pre">iocsh</span></code>); this can be disabled by providing a
+<code class="docutils literal notranslate"><span class="pre">-S</span></code> (capital ‘s’) argument. The old <code class="docutils literal notranslate"><span class="pre">-s</span></code> switch is accepted for
+backward compatibility but does nothing.</p>
+</div>
+<div class="section" id="using-makebaseapp">
+<h2>Using makeBaseApp<a class="headerlink" href="#using-makebaseapp" title="Permalink to this headline">¶</a></h2>
+<p>An easy to set up an EPICS application that uses the sequencer is to use
+<code class="docutils literal notranslate"><span class="pre">makeBaseApp.pl</span></code>, a perl script that comes with your EPICS base.
+Assuming you have it in your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, create an empty directory, go
+there, and issue the command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ben@sarun[1]: .../tmp/test &gt; makeBaseApp.pl -t example
+Name the application(s) to be created.
+Names given will have &quot;App&quot; appended to them.
+Application names? test
+ben@sarun[1]: .../tmp/test &gt; ls -l
+total 12
+-rw-rw-r-- 1 ben ben  467 May 14 22:25 Makefile
+drwxrwxr-x 2 ben ben 4096 May 14 22:25 configure
+drwxrwxr-x 4 ben ben 4096 May 14 22:25 testApp
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">testApp/src/</span></code> you will find example <code class="docutils literal notranslate"><span class="pre">.st</span></code> and <code class="docutils literal notranslate"><span class="pre">.stt</span></code> files
+and a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> that shows how to define the make variables so
+that everything is compiled and linked correctly.</p>
+<p>All that’s left to do is add:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SNCSEQ=/path/to/your/seq/installation
+</pre></div>
+</div>
+<p>to <code class="docutils literal notranslate"><span class="pre">configure/RELEASE</span></code> (that is, the one in the <code class="docutils literal notranslate"><span class="pre">configure</span></code>
+directory that <code class="docutils literal notranslate"><span class="pre">makeBaseApp.pl</span></code> just created).</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Compiling SNL Programs</a><ul>
+<li><a class="reference internal" href="#the-snl-to-c-compiler">The SNL to C Compiler</a><ul>
+<li><a class="reference internal" href="#compiler-options">Compiler Options</a></li>
+<li><a class="reference internal" href="#output-file">Output File</a></li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
+<li><a class="reference internal" href="#warnings">Warnings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#c-pre-processor">C Pre-processor</a></li>
+<li><a class="reference internal" href="#complete-build">Complete Build</a></li>
+<li><a class="reference internal" href="#building-a-stand-alone-program">Building a Stand-alone Program</a></li>
+<li><a class="reference internal" href="#using-makebaseapp">Using makeBaseApp</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Using.html"
+                        title="next chapter">Running SNL Programs</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

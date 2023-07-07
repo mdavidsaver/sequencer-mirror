@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glossary of Terms &#8212; EPICS Sequencer Version 2.2</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/naturefixed.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Plans for the Future" href="Plans.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="Plans.html" title="Plans for the Future"
+             accesskey="P">previous</a></li>
+    <span style="font-size:150%; font-weight:bold" ><a href="index.html">EPICS Sequencer Version 2.2</a></span>
+          <li class="nav-item nav-item-1"><a href="Manual.html" accesskey="U">Users’ Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Glossary of Terms</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="glossary-of-terms">
+<h1>Glossary of Terms<a class="headerlink" href="#glossary-of-terms" title="Permalink to this headline">¶</a></h1>
+<dl class="glossary simple">
+<dt id="term-sequencer">sequencer</dt><dd><ol class="arabic simple">
+<li><p>The project that defines <code class="xref any docutils literal notranslate"><span class="pre">SNL</span></code> and provides an implementation.</p></li>
+<li><p>The runtime library that supports execution of <code class="xref any docutils literal notranslate"><span class="pre">SNL</span></code> <a class="reference internal" href="Reference.html#grammar-token-program"><code class="xref any std std-token docutils literal notranslate"><span class="pre">program</span></code></a>s.</p></li>
+</ol>
+</dd>
+<dt id="term-cpp">cpp</dt><dd><p>The C preprocessor. Normally not a stand-alone program but part of the
+C compiler. Can be abused to preprocess <code class="xref any docutils literal notranslate"><span class="pre">SNL</span></code> code, too, which is a
+constant source of compatibility problems.</p>
+</dd>
+<dt id="term-snc">snc</dt><dd><p>The <code class="xref any docutils literal notranslate"><span class="pre">SNL</span></code> compiler. See <a class="reference internal" href="Compiling.html"><span class="doc">Compiling SNL Programs</span></a>.</p>
+</dd>
+<dt id="term-SNL">SNL</dt><dd><p>State Notation Language. What this project is about.</p>
+</dd>
+<dt id="term-assigned">assigned</dt><dd><p>The property of a variable or array element to occur in an <a class="reference internal" href="Reference.html#grammar-token--69"><code class="xref any std std-token docutils literal notranslate"><span class="pre">assign</span></code></a>
+clause in an <code class="xref any docutils literal notranslate"><span class="pre">SNL</span></code> <a class="reference internal" href="Reference.html#grammar-token-program"><code class="xref any std std-token docutils literal notranslate"><span class="pre">program</span></code></a>.</p>
+</dd>
+<dt id="term-PV">PV</dt><dt id="term-process-variable">process variable</dt><dd><p>A mutable variable that is globally visible and accessible via some
+network protocol in a distributed control system, such as one based on
+<code class="xref any docutils literal notranslate"><span class="pre">EPICS</span></code>.</p>
+</dd>
+<dt id="term-CA">CA</dt><dt id="term-Channel-Access">Channel Access</dt><dd><p>The <code class="xref any docutils literal notranslate"><span class="pre">EPICS</span></code> network protocol, used to connect client programs to
+<code class="xref any docutils literal notranslate"><span class="pre">PV</span></code>s hosted on a server.</p>
+</dd>
+<dt id="term-EPICS">EPICS</dt><dd><p>Experimental Physical and Industrial Control System. A set of tools
+and libraries for building large distributed soft real-time control
+systems.</p>
+</dd>
+<dt id="term-state-set">state set</dt><dd><p><code class="xref any docutils literal notranslate"><span class="pre">SNL</span></code> jargon for finite state machine. A program may contain multiple
+state sets and each runs in its own thread.</p>
+</dd>
+<dt id="term-true">true</dt><dd><p>Any non-zero value, as in C.</p>
+</dd>
+<dt id="term-false">false</dt><dd><p>Zero, as in C.</p>
+</dd>
+</dl>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3><a href="Manual.html">Table Of Contents</a></h3>
+<ul>
+<li><a class="reference internal" href="#">Glossary of Terms</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Plans.html"
+                        title="previous chapter">Plans for the Future</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>
